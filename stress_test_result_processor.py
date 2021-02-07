@@ -1,8 +1,14 @@
+"""
+Used for processing the packet data sent during stress testing (ie. latency, packet loss, peak latency).
+"""
+
+import math
+
 # Used for processing the results of a stress test.
 class StressTestResultProcessor:
     def __init__(self, num_clients, packets_per_second, duration_seconds):
         self.num_clients = num_clients
-        self.total_packets = packets_per_second * duration_seconds
+        self.total_packets = math.floor(packets_per_second * duration_seconds)
         self.packet_data = []
         # Initialize a two dimensional array with None values to represent each stress test client's packet latencies.
         for client in range(0, num_clients):
