@@ -11,11 +11,12 @@ import paho.mqtt.client as mqtt
 import os
 import stress_test_result_processor as strp
 from array import *
-import re
+import math
+import packet_data_parse_utils as parse_utils
 
 # Details for connecting to the broker. Adjust these for your own network.
 broker_ip = "192.168.137.1"
-broker_port = 1883
+broker_port = 11883
 
 # Reference to the client that initializes the stress test. This will be alive throughout the entire lifecycle of the program.
 # The ONLY resposibility of this client is for communication with the UI client. This does not partake in the stress testing.
@@ -24,12 +25,17 @@ master_client = None
 # The list of clients that stress test the network. This will be populated when a stress test begins and be cleared when a stress test ends.
 stress_testing_clients = []
 
-# If a stress test is currently running
+# If a stress test is currently running.
 stress_test_running = False
-# The number of requests each stress test client will send per second
-packets_per_second = 1
-# The number of seconds the stress test will run for
-duration_seconds = 30
+
+# The number of clients to send requests during the stress test
+num_clients = 3
+# The number of requests each stress test client will send per second.
+packets_per_second = 10
+# The number of seconds the stress test will run for.
+duration_seconds = 15
+# The QoS level to make stress test clients abide to.
+qos_level = 0
 
 # Collects data for returned messages and processes the latency and packet loss. Created on stress test start and destroyed on stress test end.
 result_processor = None
@@ -39,21 +45,20 @@ def initialize_stress_test_clients(num_clients):
     for x in range(0, num_clients):
         client_id = f'Stress Test Client {x}'
         stress_test_client = mqtt.Client(client_id = client_id)
-        stress_test_client.on_message = on_stress_test_message
+        stress_test_client.on_message = on_stress_test_client_message
         stress_test_client.connect(broker_ip, broker_port, 60)
-        stress_test_client.subscribe(client_id)
+        stress_test_client.subscribe(client_id, qos_level)
         stress_test_client.loop_start()
 
         stress_testing_clients.append(stress_test_client)
 
 # Starts a stress test. This should not be invoked if a stress test is already ongoing.
-def start_stress_test(num_clients = 25):
+def start_stress_test():
     global stress_test_running
     stress_test_running = True
 
     global result_processor
     result_processor = strp.StressTestResultProcessor(num_clients, packets_per_second, duration_seconds)
-
     initialize_stress_test_clients(num_clients)
 
 # Stops a stress test and cleans up necessary variables for a potential new stress test.
@@ -68,6 +73,8 @@ def stop_stress_test():
     print(f'Min Latency: {result_processor.get_total_min_latency()}ms')
     print(f'Packets Lost: {result_processor.get_total_packets_lost()}')
 
+    #TODO: Send data to broker supplying result set
+
     result_processor = None
     global stress_test_running
     stress_test_running = False
@@ -79,38 +86,56 @@ def on_master_connect(client, userdata, flags, rc):
     else: # Any code other than 0 means the connection was not successful.
         print(f'Connection to {broker_ip}:{broker_port} was unsuccessful (Error Code {rc}).')
 
-# Regex for getting values for each part of the packet data.
-client_num_regex = re.compile('(?<=Stress Test Client )[0-9]+')
-packet_num_regex = re.compile('(?<=Packet#)[0-9]+')
-packet_time_regex = re.compile('(?<=\[)[0-9]+(?=\])')
-
-# Gets the topic and payload contents of the message, and parses them for client number, packet number, and time difference in order
-# to analyze latency and packet loss.
-def on_stress_test_message(client, userdata, msg):
-    current_time = time.time_ns() // 1_000_000 #Gets the epoch time in milliseconds. This will be used to process latency.
-
-    topic = msg.topic
-    payload = str(msg.payload)
-
-    client_num_match = client_num_regex.search(topic);
-    packet_num_match = packet_num_regex.search(payload);
-    packet_time_match = packet_time_regex.search(payload);
-    if client_num_match != None and packet_num_match != None and packet_time_match != None:
-        client_num = client_num_match.group(0)
-        packet_num = packet_num_match.group(0)
-        packet_time = packet_time_match.group(0)
-
-        latency = current_time - int(packet_time)
-        result_processor.add_latency_info(int(client_num), int(packet_num), latency)
-
-
 # Executed when the client receives a message from the broker.
 # This will begin the stress test.
 # TODO: Error handling for if a stress test is already ongoing.
 # TODO: Get parameters from the message for stress test.
 def on_master_message(client, userdata, msg):
     print('Request received! Starting stress test.')
+
+    # Parse any arguments supplied from the message
+    num_clients_param = parse_utils.get_test_num_clients(msg)
+    if num_clients_param != None:
+        global num_clients
+        num_clients = int(num_clients_param)
+
+    packets_per_second_param = parse_utils.get_test_packets_per_second(msg)
+    if packets_per_second_param != None:
+        global packets_per_second
+        packets_per_second = int(packets_per_second_param)
+
+    duration_param = parse_utils.get_test_duration(msg)
+    if duration_param != None:
+        global duration_seconds
+        duration_seconds = int(duration_param)
+
+    qos_level_param = parse_utils.get_test_qos_level(msg)
+    if qos_level_param != None:
+        global qos_level
+        qos_level = int(qos_level_param)
+
+    print('Request Parameters: ')
+    print(f'Num Clients: {num_clients_param}')
+    print(f'Packets Per Second: {packets_per_second_param}')
+    print(f'Duration: {duration_param}')
+    print(f'QoS Level: {qos_level_param}')
+
     start_stress_test()
+
+# Gets the topic and payload contents of the message, and parses them for client number, packet number, and time difference in order
+# to analyze latency and packet loss.
+def on_stress_test_client_message(client, userdata, msg):
+    current_time = time.time_ns() // 1_000_000 #Gets the epoch time in milliseconds. This will be used to process latency.
+
+    # Parse data from the message regarding the packet
+    client_id = parse_utils.get_client_id(msg)
+    packet_num = parse_utils.get_packet_num(msg)
+    packet_time = parse_utils.get_packet_time(msg)
+
+    if client_id != None and packet_num != None and packet_time != None:
+        latency = current_time - int(packet_time)
+        # Supply the data to the result processor
+        result_processor.add_latency_info(int(client_id), int(packet_num), latency)
 
 # Initializes the master client  
 def initialize_master_client():
@@ -133,13 +158,13 @@ while True:
     if stress_test_running:
         # Get the total number of packets to be processed, and iterates over them all, making each stress test client
         # send a packet to the broker in their own unique channel.
-        total_packets = packets_per_second * duration_seconds
+        total_packets = math.floor(packets_per_second * duration_seconds)
         for current_packet in range(0, total_packets):
             for i in range(0, len(stress_testing_clients)):
                 client = stress_testing_clients[i];
                 client_id = f'Stress Test Client {i}';
                 time_in_milliseconds = time.time_ns() // 1_000_000 #Gets the epoch time in milliseconds. This will be used to process latency.
-                client.publish(client_id, f'[{client_id}] [Packet#{current_packet}] [{time_in_milliseconds}] Ping!', 1)
+                client.publish(client_id, f'[{client_id}] [Packet#{current_packet}] [{time_in_milliseconds}] Ping!', qos_level)
             time.sleep(1 / packets_per_second) 
         # Allow 5 seconds to pass before stopping the stress test for any high-latency packets to get collected.
         time.sleep(5)
