@@ -172,4 +172,4 @@ while True:
         stop_stress_test()
     else:
         # If there isn't a stress test running, sleep for a second to save resources.
-        time.sleep(6)
+        time.sleep(7)
