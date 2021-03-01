@@ -1,6 +1,7 @@
 class LatencyResultsProcessor:
     def __init__(self, total_packets):
         self.packet_data = []
+        self.total_packets = total_packets
         for i in range(0, total_packets):
             self.packet_data.append(None)
         

@@ -10,8 +10,8 @@ broker_ip = "192.168.2.44"
 broker_port = 1883
 master_topic = 'stress_test/master'
 
-def create_publisher(id, packet_interval_ms, duration_seconds, qos_level, packet_size_min_bytes, packet_size_max_bytes):
-    client = stress_test_client.StressTestClient(id, packet_interval_ms, duration_seconds, qos_level, packet_size_min_bytes, packet_size_max_bytes)
+def create_publisher(id, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes):
+    client = stress_test_client.StressTestClient(id, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes)
     client.initialize_client(broker_ip, broker_port)
     publishers.append(client)
 
@@ -26,18 +26,16 @@ def create_master_client():
     message = {
         "clients": [
             {
-                "packet_interval_ms": 50,
+                "packet_interval_ms": 1000,
                 "qos_level": 1,
-                "duration_seconds": 60,
-                "packet_size_min_bytes": -1,
-                "packet_size_max_bytes": -1 
+                "duration_seconds": 30,
+                "packet_size_bytes": 1_000_000
             },
             {
                 "packet_interval_ms": 25,
                 "qos_level": 0,
                 "duration_seconds": 30,
-                "packet_size_min_bytes": -1,
-                "packet_size_max_bytes": -1 
+                "packet_size_bytes": 100
             }
         ]
     }
@@ -48,21 +46,24 @@ def on_master_receive_message(client, userdata, msg):
     packet = json.loads(msg.payload)
     for i in range(0, len(packet["clients"])):
         client = packet["clients"][i]
-        create_publisher(i, client["packet_interval_ms"], client["duration_seconds"], client["qos_level"], client["packet_size_min_bytes"], client["packet_size_max_bytes"])
+        create_publisher(i, client["packet_interval_ms"], client["duration_seconds"], client["qos_level"], client["packet_size_bytes"])
     start_publishing()
 
 def start_publishing():
     for publisher in publishers:
         packet_interval_ticks = task_manager.convertMsToTicks(publisher.packet_interval_ms)
-        print(packet_interval_ticks)
         task = task_manager.Task(publisher.publish_message, packet_interval_ticks, publisher.total_packets_to_send)
         task_manager.add_task(task)
     task_manager.start(gather_results)
 
 def gather_results():
-    print('Gathering results')
+    time.sleep(5)
+    client_results = []
+    for publisher in publishers:
+        print(f'{publisher.id} Avg Latency: {publisher.results.get_average_latency()}')
 
 print('Creating master client')
+
 create_master_client()
 while True:
-    time.sleep(0.25)
+    time.sleep(0.0001)
