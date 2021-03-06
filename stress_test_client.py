@@ -56,7 +56,7 @@ class StressTestClient:
 
     """Gets the true data from a packet payload that has been appended with garbage to increase size"""
     def decode_payload(self, payload):
-         # Convert the payload from immutable bytes into a mutable byte array
+        # Convert the payload from immutable bytes into a mutable byte array
         payload_byte_arr = bytearray(payload)
         sanitized_payload_byte_arr = bytearray()
         for i in range(0, len(payload_byte_arr)):
@@ -68,7 +68,6 @@ class StressTestClient:
 
     def on_receive_message(self, client, userdata, msg):
         packet_data = json.loads(self.decode_payload(msg.payload))
-        print(sys.getsizeof(bytearray(msg.payload)))
 
         time_in_milliseconds = time.time_ns() // 1_000_000
         latency = time_in_milliseconds - packet_data["time_sent"]

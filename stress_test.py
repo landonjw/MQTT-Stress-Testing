@@ -29,7 +29,7 @@ def create_master_client():
                 "packet_interval_ms": 1000,
                 "qos_level": 1,
                 "duration_seconds": 30,
-                "packet_size_bytes": 1_000_000
+                "packet_size_bytes": 1_000
             },
             {
                 "packet_interval_ms": 25,
@@ -58,11 +58,26 @@ def start_publishing():
 
 def gather_results():
     time.sleep(5)
-    client_results = []
+    publisher_results = []
     for publisher in publishers:
-        print(f'{publisher.id} Avg Latency: {publisher.results.get_average_latency()}')
-
-print('Creating master client')
+        publisher_results.append(publisher.results)
+    results = {
+        "total": {
+            "latency_average": latency_results.get_total_average_latency(publisher_results),
+            "latency_min": latency_results.get_total_min_latency(publisher_results),
+            "latency_max": latency_results.get_total_max_latency(publisher_results),
+            "packets_lost": latency_results.get_total_packetS_lost(publisher_results)
+        },
+        "clients": []
+    }
+    for i in range(0, len(publisher_results)):
+        results["clients"].append({
+            "latency_average": publisher_results[i].get_average_latency(),
+            "latency_min": publisher_results[i].get_min_latency(),
+            "latency_max": publisher_results[i].get_max_latency(),
+            "packets_lost": publisher_results[i].get_packets_lost()
+        })
+    print(json.dumps(results, indent=4))
 
 create_master_client()
 while True:
