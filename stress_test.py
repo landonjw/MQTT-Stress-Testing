@@ -3,6 +3,7 @@ import json
 import paho.mqtt.client as mqtt
 import stress_test_client
 import task_manager
+import latency_results
 
 publishers = []
 
@@ -22,29 +23,10 @@ def create_master_client():
     client.connect(broker_ip, broker_port, 60)
     client.subscribe(start_topic, 1)
     client.loop_start()
-    time.sleep(3)
-
-    message = {
-        "clients": [
-            {
-                "packet_interval_ms": 1000,
-                "qos_level": 1,
-                "duration_seconds": 30,
-                "packet_size_bytes": 1_000
-            },
-            {
-                "packet_interval_ms": 25,
-                "qos_level": 0,
-                "duration_seconds": 30,
-                "packet_size_bytes": 100
-            }
-        ]
-    }
-    client.publish(start_topic, json.dumps(message))
 
 def on_master_receive_message(client, userdata, msg):
-    print(msg.payload)
     packet = json.loads(msg.payload)
+    print(json.dumps(packet, indent=4))
     for i in range(0, len(packet["clients"])):
         client = packet["clients"][i]
         create_publisher(i, client["packet_interval_ms"], client["duration_seconds"], client["qos_level"], client["packet_size_bytes"])
@@ -67,7 +49,7 @@ def gather_results():
             "latency_average": latency_results.get_total_average_latency(publisher_results),
             "latency_min": latency_results.get_total_min_latency(publisher_results),
             "latency_max": latency_results.get_total_max_latency(publisher_results),
-            "packets_lost": latency_results.get_total_packetS_lost(publisher_results)
+            "packets_lost": latency_results.get_total_packets_lost(publisher_results)
         },
         "clients": []
     }

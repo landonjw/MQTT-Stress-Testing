@@ -14,7 +14,6 @@ class StressTestClient:
         self.total_packets_to_send = math.floor((1000 / packet_interval_ms) * duration_seconds)
         self.qos_level = qos_level
         self.packet_size_bytes = packet_size_bytes
-        print(f'Packet Size: {packet_size_bytes}')
         self.packet_payload = bytearray(packet_size_bytes)
         self.current_packet = 0
         self.results = latency_results.LatencyResultsProcessor(self.total_packets_to_send)
@@ -38,7 +37,7 @@ class StressTestClient:
         payload_byte_arr = bytearray(json.dumps(message).encode('utf-8'))
         for i in range(0, len(payload_byte_arr)):
             self.packet_payload[i] = payload_byte_arr[i]
-        
+            
         self.client.publish(self.topic, self.packet_payload)
 
         for i in range(0, len(payload_byte_arr)):
