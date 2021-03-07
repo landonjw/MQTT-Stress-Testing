@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.brokerIpAddrInput = new MetroFramework.Controls.MetroTextBox();
             this.ipAdressLabel = new MetroFramework.Controls.MetroLabel();
             this.brokerPortInput = new MetroFramework.Controls.MetroTextBox();
@@ -37,8 +38,6 @@
             this.durationLabel = new MetroFramework.Controls.MetroLabel();
             this.qosLabel = new MetroFramework.Controls.MetroLabel();
             this.startStressTest = new MetroFramework.Controls.MetroButton();
-            this.progressBar = new MetroFramework.Controls.MetroProgressBar();
-            this.progressStatus = new MetroFramework.Controls.MetroLabel();
             this.clientConfigGroupBox = new System.Windows.Forms.GroupBox();
             this.packetSize = new MetroFramework.Controls.MetroTextBox();
             this.packetInterval = new MetroFramework.Controls.MetroTextBox();
@@ -48,8 +47,14 @@
             this.updateNumClients = new MetroFramework.Controls.MetroButton();
             this.clientSelection = new MetroFramework.Controls.MetroComboBox();
             this.qosLevel = new MetroFramework.Controls.MetroComboBox();
+            this.progressSpinner = new MetroFramework.Controls.MetroProgressSpinner();
+            this.progressLabel = new MetroFramework.Controls.MetroLabel();
+            this.timeOngoing = new MetroFramework.Controls.MetroLabel();
+            this.loadingPanel = new MetroFramework.Controls.MetroPanel();
+            this.labelTimer = new System.Windows.Forms.Timer(this.components);
             this.clientConfigGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numClients)).BeginInit();
+            this.loadingPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // brokerIpAddrInput
@@ -59,6 +64,7 @@
             this.brokerIpAddrInput.Name = "brokerIpAddrInput";
             this.brokerIpAddrInput.Size = new System.Drawing.Size(217, 25);
             this.brokerIpAddrInput.TabIndex = 2;
+            this.brokerIpAddrInput.Text = "192.168.2.44";
             // 
             // ipAdressLabel
             // 
@@ -133,27 +139,6 @@
             this.startStressTest.TabIndex = 19;
             this.startStressTest.Text = "START STRESS TEST";
             this.startStressTest.Click += new System.EventHandler(this.startStressTest_Click);
-            // 
-            // progressBar
-            // 
-            this.progressBar.HideProgressText = false;
-            this.progressBar.Location = new System.Drawing.Point(21, 594);
-            this.progressBar.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(373, 23);
-            this.progressBar.TabIndex = 20;
-            this.progressBar.Visible = false;
-            // 
-            // progressStatus
-            // 
-            this.progressStatus.AutoSize = true;
-            this.progressStatus.FontSize = MetroFramework.MetroLabelSize.Small;
-            this.progressStatus.Location = new System.Drawing.Point(21, 624);
-            this.progressStatus.Name = "progressStatus";
-            this.progressStatus.Size = new System.Drawing.Size(90, 17);
-            this.progressStatus.TabIndex = 21;
-            this.progressStatus.Text = "Progress Status";
-            this.progressStatus.Visible = false;
             // 
             // clientConfigGroupBox
             // 
@@ -271,20 +256,67 @@
             this.qosLevel.TabIndex = 29;
             this.qosLevel.SelectedIndexChanged += new System.EventHandler(this.qosLevel_SelectedIndexChanged);
             // 
+            // progressSpinner
+            // 
+            this.progressSpinner.Location = new System.Drawing.Point(19, 22);
+            this.progressSpinner.Maximum = 100;
+            this.progressSpinner.Name = "progressSpinner";
+            this.progressSpinner.Size = new System.Drawing.Size(282, 292);
+            this.progressSpinner.TabIndex = 29;
+            // 
+            // progressLabel
+            // 
+            this.progressLabel.AutoSize = true;
+            this.progressLabel.Location = new System.Drawing.Point(63, 323);
+            this.progressLabel.Name = "progressLabel";
+            this.progressLabel.Size = new System.Drawing.Size(178, 20);
+            this.progressLabel.TabIndex = 30;
+            this.progressLabel.Text = "Running Tests. Please wait...";
+            // 
+            // timeOngoing
+            // 
+            this.timeOngoing.AutoSize = true;
+            this.timeOngoing.Location = new System.Drawing.Point(122, 347);
+            this.timeOngoing.Name = "timeOngoing";
+            this.timeOngoing.Size = new System.Drawing.Size(63, 20);
+            this.timeOngoing.TabIndex = 31;
+            this.timeOngoing.Text = "00:00:00";
+            // 
+            // loadingPanel
+            // 
+            this.loadingPanel.Controls.Add(this.timeOngoing);
+            this.loadingPanel.Controls.Add(this.progressLabel);
+            this.loadingPanel.Controls.Add(this.progressSpinner);
+            this.loadingPanel.HorizontalScrollbarBarColor = true;
+            this.loadingPanel.HorizontalScrollbarHighlightOnWheel = false;
+            this.loadingPanel.HorizontalScrollbarSize = 10;
+            this.loadingPanel.Location = new System.Drawing.Point(46, 64);
+            this.loadingPanel.Name = "loadingPanel";
+            this.loadingPanel.Size = new System.Drawing.Size(320, 389);
+            this.loadingPanel.TabIndex = 30;
+            this.loadingPanel.VerticalScrollbarBarColor = true;
+            this.loadingPanel.VerticalScrollbarHighlightOnWheel = false;
+            this.loadingPanel.VerticalScrollbarSize = 10;
+            this.loadingPanel.Visible = false;
+            // 
+            // labelTimer
+            // 
+            this.labelTimer.Interval = 1000;
+            this.labelTimer.Tick += new System.EventHandler(this.labelTimer_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(417, 676);
+            this.ClientSize = new System.Drawing.Size(418, 604);
+            this.Controls.Add(this.loadingPanel);
             this.Controls.Add(this.clientSelection);
             this.Controls.Add(this.updateNumClients);
+            this.Controls.Add(this.brokerPortLabel);
             this.Controls.Add(this.numClients);
             this.Controls.Add(this.numClientsLabel);
             this.Controls.Add(this.clientConfigGroupBox);
-            this.Controls.Add(this.progressStatus);
-            this.Controls.Add(this.progressBar);
             this.Controls.Add(this.startStressTest);
-            this.Controls.Add(this.brokerPortLabel);
             this.Controls.Add(this.brokerPortInput);
             this.Controls.Add(this.ipAdressLabel);
             this.Controls.Add(this.brokerIpAddrInput);
@@ -297,6 +329,8 @@
             this.clientConfigGroupBox.ResumeLayout(false);
             this.clientConfigGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numClients)).EndInit();
+            this.loadingPanel.ResumeLayout(false);
+            this.loadingPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -313,8 +347,6 @@
         private MetroFramework.Controls.MetroLabel durationLabel;
         private MetroFramework.Controls.MetroLabel qosLabel;
         private MetroFramework.Controls.MetroButton startStressTest;
-        private MetroFramework.Controls.MetroProgressBar progressBar;
-        private MetroFramework.Controls.MetroLabel progressStatus;
         private System.Windows.Forms.GroupBox clientConfigGroupBox;
         private MetroFramework.Controls.MetroLabel packetSizeLabel;
         private MetroFramework.Controls.MetroTextBox packetSize;
@@ -324,6 +356,11 @@
         private MetroFramework.Controls.MetroButton updateNumClients;
         private MetroFramework.Controls.MetroComboBox clientSelection;
         private MetroFramework.Controls.MetroComboBox qosLevel;
+        private MetroFramework.Controls.MetroProgressSpinner progressSpinner;
+        private MetroFramework.Controls.MetroLabel timeOngoing;
+        private MetroFramework.Controls.MetroLabel progressLabel;
+        private MetroFramework.Controls.MetroPanel loadingPanel;
+        private System.Windows.Forms.Timer labelTimer;
     }
 }
 

@@ -125,6 +125,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StressTestEntityResults.cs" />
+    <Compile Include="StressTestIncomingResults.cs" />
     <Compile Include="StressTestOutgoingConfiguration.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

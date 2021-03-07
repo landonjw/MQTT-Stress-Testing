@@ -11,14 +11,8 @@ using epic_mqtt;
 using MetroFramework.Forms;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
@@ -29,6 +23,7 @@ namespace mqtt_stresstest
     {
         MqttClient client;
         List<ClientConfiguration> clientConfigurations = new List<ClientConfiguration>();
+        int secondsElapsed = 0;
 
         public Form1()
         {
@@ -38,6 +33,8 @@ namespace mqtt_stresstest
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            clientConfigGroupBox.Controls.Remove(timeOngoing);
+            clientConfigGroupBox.Controls.Remove(progressLabel);
             clientSelection.SelectedIndex = 0;
             LoadClientConfigIntoForm(0);
         }
@@ -82,14 +79,11 @@ namespace mqtt_stresstest
             client = new MqttClient(brokerHost, brokerPort, false, null, null, MqttSslProtocols.None);
             string clientId = "stress_test/ui";
 
-            // Make the progress bar & status visible to give user some input on the application's life cycle
-            progressBar.Visible = true;
-            progressStatus.Visible = true;
-            progressStatus.Text = "Connecting to broker...";
-
             try
             {
                 client.Connect(clientId);
+                client.MqttMsgPublishReceived += onMessageReceived;
+                client.Subscribe(new string[]{ "stress_test/results" }, new byte[]{ MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
             }
             catch (Exception)
             {
@@ -98,13 +92,33 @@ namespace mqtt_stresstest
                 return;
             }
 
-            progressBar.Increment(2);
-            progressStatus.Text = "Connection established. Sending stress test request...";
-
             string serializedConfiguration = JsonSerializer.Serialize(new StressTestOutgoingConfiguration { Clients = this.clientConfigurations });
 
             // Send a packet to the broker supplying all the arguments for starting a stress test
             client.Publish("stress_test/start", Encoding.UTF8.GetBytes(serializedConfiguration));
+
+            HideAllControls();
+            loadingPanel.Visible = true;
+            StartLoadingTimer();
+        }
+
+        private void StartLoadingTimer()
+        {
+            labelTimer.Enabled = true;
+        }
+
+        private void HideAllControls()
+        {
+            ipAdressLabel.Visible = false;
+            brokerIpAddrInput.Visible = false;
+            brokerPortLabel.Visible = false;
+            brokerPortInput.Visible = false;
+            numClientsLabel.Visible = false;
+            numClients.Visible = false;
+            updateNumClients.Visible = false;
+            clientSelection.Visible = false;
+            clientConfigGroupBox.Visible = false;
+            startStressTest.Visible = false;
         }
 
         private void clientSelection_SelectedIndexChanged(object sender, EventArgs e)
@@ -157,6 +171,29 @@ namespace mqtt_stresstest
                 Console.WriteLine("Removing");
                 RemoveClientConfig();
             }
+        }
+
+        private void labelTimer_Tick(object sender, EventArgs e)
+        {
+            secondsElapsed++;
+            TimeSpan t = TimeSpan.FromSeconds(secondsElapsed);
+
+            string elapsed = string.Format("{0:D2}:{1:D2}:{2:D2}", t.Hours, t.Minutes, t.Seconds);
+            timeOngoing.Text = elapsed;
+        }
+
+        void onMessageReceived(object sender, MqttMsgPublishEventArgs getMsg)
+        {
+            string payload = Encoding.UTF8.GetString(getMsg.Message);
+            StressTestIncomingResults results = JsonSerializer.Deserialize<StressTestIncomingResults>(payload);
+            Console.WriteLine($"Average Latency: {results.totalResults.AverageLatency}");
+            Console.WriteLine($"Maximum Latency: {results.totalResults.MaximumLatency}");
+            Console.WriteLine($"Minimum Latency: {results.totalResults.MinimumLatency}");
+            Console.WriteLine($"Packets Lost: {results.totalResults.PacketsLost}");
+            Console.WriteLine($"Client 1 Average Latency: {results.clientResults[0].AverageLatency}");
+            Console.WriteLine($"Client 1 Maximum Latency: {results.clientResults[0].MaximumLatency}");
+            Console.WriteLine($"Client 1 Minimum Latency: {results.clientResults[0].MinimumLatency}");
+            Console.WriteLine($"Client 1 Packets Lost: {results.clientResults[0].PacketsLost}");
         }
     }
 }
