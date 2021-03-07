@@ -8,7 +8,8 @@ publishers = []
 
 broker_ip = "192.168.2.44"
 broker_port = 1883
-master_topic = 'stress_test/master'
+start_topic = 'stress_test/start'
+results_topic = 'stress_test/results'
 
 def create_publisher(id, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes):
     client = stress_test_client.StressTestClient(id, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes)
@@ -19,7 +20,7 @@ def create_master_client():
     client = mqtt.Client(client_id = 'Stress Test Master')
     client.on_message = on_master_receive_message
     client.connect(broker_ip, broker_port, 60)
-    client.subscribe(master_topic, 1)
+    client.subscribe(start_topic, 1)
     client.loop_start()
     time.sleep(3)
 
@@ -39,7 +40,7 @@ def create_master_client():
             }
         ]
     }
-    client.publish(master_topic, json.dumps(message))
+    client.publish(start_topic, json.dumps(message))
 
 def on_master_receive_message(client, userdata, msg):
     print(msg.payload)
