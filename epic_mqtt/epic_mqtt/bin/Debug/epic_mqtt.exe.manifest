@@ -42,14 +42,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="epic_mqtt.exe" size="15328">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="epic_mqtt.exe" size="16864">
       <assemblyIdentity name="epic_mqtt" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>I0K06Ou5dRugTsDein1wP4Yyqyz9/Ki3ZXePCcZFuEA=</dsig:DigestValue>
+        <dsig:DigestValue>fKcNfG6933Xa5+LbTK2kA7xKaUG2cp+dxFJ7M5AEXhs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

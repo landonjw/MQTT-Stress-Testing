@@ -163,6 +163,17 @@ namespace mqtt_stresstest
             clientSelection.SelectedIndex = clientSelection.Items.Count - 2;
         }
 
+        private void RemoveClientConfig()
+        {
+            clientConfigurations.RemoveAt(clientConfigurations.Count - 1);
+            if (clientSelection.SelectedIndex == clientSelection.Items.Count - 2)
+            {
+                clientSelection.SelectedIndex = clientSelection.Items.Count - 3;
+            }
+            clientSelection.Items.RemoveAt(clientSelection.Items.Count - 2);
+            addNewConfigIndex--;
+        }
+
         private void packetInterval_Leave(object sender, EventArgs e)
         {
             clientConfigurations[clientSelection.SelectedIndex].PacketIntervalMS = Int32.Parse(packetInterval.Text);
@@ -181,6 +192,21 @@ namespace mqtt_stresstest
         private void qosLevel_SelectedIndexChanged(object sender, EventArgs e)
         {
             clientConfigurations[clientSelection.SelectedIndex].QOSLevel = Int32.Parse(qosLevel.SelectedItem.ToString());
+        }
+
+        private void updateNumClients_Click(object sender, EventArgs e)
+        {
+            while (numClients.Value > clientConfigurations.Count)
+            {
+                Console.WriteLine("Adding");
+                AddNewClientConfig();
+            }
+
+            while (numClients.Value < clientConfigurations.Count)
+            {
+                Console.WriteLine("Removing");
+                RemoveClientConfig();
+            }
         }
     }
 }
