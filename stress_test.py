@@ -11,6 +11,7 @@ broker_ip = "192.168.2.44"
 broker_port = 1883
 start_topic = 'stress_test/start'
 results_topic = 'stress_test/results'
+master_client = None
 
 def create_publisher(id, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes):
     client = stress_test_client.StressTestClient(id, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes)
@@ -18,11 +19,12 @@ def create_publisher(id, packet_interval_ms, duration_seconds, qos_level, packet
     publishers.append(client)
 
 def create_master_client():
-    client = mqtt.Client(client_id = 'Stress Test Master')
-    client.on_message = on_master_receive_message
-    client.connect(broker_ip, broker_port, 60)
-    client.subscribe(start_topic, 1)
-    client.loop_start()
+    global master_client
+    master_client = mqtt.Client(client_id = 'Stress Test Master')
+    master_client.on_message = on_master_receive_message
+    master_client.connect(broker_ip, broker_port, 60)
+    master_client.subscribe(start_topic, 1)
+    master_client.loop_start()
 
 def on_master_receive_message(client, userdata, msg):
     packet = json.loads(msg.payload)
@@ -60,7 +62,8 @@ def gather_results():
             "latency_max": publisher_results[i].get_max_latency(),
             "packets_lost": publisher_results[i].get_packets_lost()
         })
-    print(json.dumps(results, indent=4))
+    print('Sending results')
+    master_client.publish(results_topic, json.dumps(results));
 
 create_master_client()
 while True:
