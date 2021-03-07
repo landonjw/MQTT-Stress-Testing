@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace epic_mqtt
 {
-    class StressTestIncomingResults
+    public class StressTestIncomingResults
     {
         [JsonPropertyName("total")]
-        public StressTestEntityResults totalResults { get; set; }
+        public StressTestEntityResults TotalResults { get; set; }
         [JsonPropertyName("clients")]
-        public List<StressTestEntityResults> clientResults { get; set; } = new List<StressTestEntityResults>();
+        public List<StressTestEntityResults> ClientResults { get; set; } = new List<StressTestEntityResults>();
     }
 }

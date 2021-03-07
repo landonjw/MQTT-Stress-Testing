@@ -1,6 +1,6 @@
 ﻿namespace mqtt_stresstest
 {
-    partial class Form1
+    partial class StartConfigForm
     {
         /// <summary>
         /// Required designer variable.
@@ -45,13 +45,13 @@
             this.numClientsLabel = new MetroFramework.Controls.MetroLabel();
             this.numClients = new System.Windows.Forms.NumericUpDown();
             this.updateNumClients = new MetroFramework.Controls.MetroButton();
-            this.clientSelection = new MetroFramework.Controls.MetroComboBox();
-            this.qosLevel = new MetroFramework.Controls.MetroComboBox();
             this.progressSpinner = new MetroFramework.Controls.MetroProgressSpinner();
             this.progressLabel = new MetroFramework.Controls.MetroLabel();
             this.timeOngoing = new MetroFramework.Controls.MetroLabel();
             this.loadingPanel = new MetroFramework.Controls.MetroPanel();
             this.labelTimer = new System.Windows.Forms.Timer(this.components);
+            this.clientSelection = new System.Windows.Forms.ComboBox();
+            this.qosLevel = new System.Windows.Forms.ComboBox();
             this.clientConfigGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numClients)).BeginInit();
             this.loadingPanel.SuspendLayout();
@@ -200,7 +200,7 @@
             // numClients
             // 
             this.numClients.Location = new System.Drawing.Point(23, 166);
-            this.numClients.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numClients.Margin = new System.Windows.Forms.Padding(4);
             this.numClients.Maximum = new decimal(new int[] {
             200,
             0,
@@ -223,38 +223,12 @@
             // updateNumClients
             // 
             this.updateNumClients.Location = new System.Drawing.Point(259, 166);
-            this.updateNumClients.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.updateNumClients.Margin = new System.Windows.Forms.Padding(4);
             this.updateNumClients.Name = "updateNumClients";
             this.updateNumClients.Size = new System.Drawing.Size(136, 28);
             this.updateNumClients.TabIndex = 27;
             this.updateNumClients.Text = "Update";
             this.updateNumClients.Click += new System.EventHandler(this.updateNumClients_Click);
-            // 
-            // clientSelection
-            // 
-            this.clientSelection.FormattingEnabled = true;
-            this.clientSelection.ItemHeight = 24;
-            this.clientSelection.Items.AddRange(new object[] {
-            "Client 1"});
-            this.clientSelection.Location = new System.Drawing.Point(19, 210);
-            this.clientSelection.Name = "clientSelection";
-            this.clientSelection.Size = new System.Drawing.Size(378, 30);
-            this.clientSelection.TabIndex = 28;
-            this.clientSelection.SelectedIndexChanged += new System.EventHandler(this.clientSelection_SelectedIndexChanged);
-            // 
-            // qosLevel
-            // 
-            this.qosLevel.FormattingEnabled = true;
-            this.qosLevel.ItemHeight = 24;
-            this.qosLevel.Items.AddRange(new object[] {
-            "0",
-            "1",
-            "2"});
-            this.qosLevel.Location = new System.Drawing.Point(8, 219);
-            this.qosLevel.Name = "qosLevel";
-            this.qosLevel.Size = new System.Drawing.Size(361, 30);
-            this.qosLevel.TabIndex = 29;
-            this.qosLevel.SelectedIndexChanged += new System.EventHandler(this.qosLevel_SelectedIndexChanged);
             // 
             // progressSpinner
             // 
@@ -290,7 +264,7 @@
             this.loadingPanel.HorizontalScrollbarBarColor = true;
             this.loadingPanel.HorizontalScrollbarHighlightOnWheel = false;
             this.loadingPanel.HorizontalScrollbarSize = 10;
-            this.loadingPanel.Location = new System.Drawing.Point(46, 64);
+            this.loadingPanel.Location = new System.Drawing.Point(48, 77);
             this.loadingPanel.Name = "loadingPanel";
             this.loadingPanel.Size = new System.Drawing.Size(320, 389);
             this.loadingPanel.TabIndex = 30;
@@ -304,13 +278,39 @@
             this.labelTimer.Interval = 1000;
             this.labelTimer.Tick += new System.EventHandler(this.labelTimer_Tick);
             // 
-            // Form1
+            // clientSelection
+            // 
+            this.clientSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.clientSelection.FormattingEnabled = true;
+            this.clientSelection.Items.AddRange(new object[] {
+            "Client 1"});
+            this.clientSelection.Location = new System.Drawing.Point(21, 217);
+            this.clientSelection.Name = "clientSelection";
+            this.clientSelection.Size = new System.Drawing.Size(374, 24);
+            this.clientSelection.TabIndex = 31;
+            this.clientSelection.SelectedIndexChanged += new System.EventHandler(this.clientSelection_SelectedIndexChanged);
+            // 
+            // qosLevel
+            // 
+            this.qosLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.qosLevel.FormattingEnabled = true;
+            this.qosLevel.Items.AddRange(new object[] {
+            "0",
+            "1",
+            "2"});
+            this.qosLevel.Location = new System.Drawing.Point(8, 221);
+            this.qosLevel.Name = "qosLevel";
+            this.qosLevel.Size = new System.Drawing.Size(360, 24);
+            this.qosLevel.TabIndex = 28;
+            this.qosLevel.SelectedIndexChanged += new System.EventHandler(this.qosLevel_SelectedIndexChanged);
+            // 
+            // StartConfigForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(418, 604);
-            this.Controls.Add(this.loadingPanel);
+            this.ClientSize = new System.Drawing.Size(423, 604);
             this.Controls.Add(this.clientSelection);
+            this.Controls.Add(this.loadingPanel);
             this.Controls.Add(this.updateNumClients);
             this.Controls.Add(this.brokerPortLabel);
             this.Controls.Add(this.numClients);
@@ -321,11 +321,11 @@
             this.Controls.Add(this.ipAdressLabel);
             this.Controls.Add(this.brokerIpAddrInput);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.Name = "Form1";
+            this.Name = "StartConfigForm";
             this.Padding = new System.Windows.Forms.Padding(19, 74, 19, 16);
             this.Style = MetroFramework.MetroColorStyle.White;
             this.Text = "MQTT Stress Tester";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Load += new System.EventHandler(this.StartConfigForm_Load);
             this.clientConfigGroupBox.ResumeLayout(false);
             this.clientConfigGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numClients)).EndInit();
@@ -354,13 +354,13 @@
         private MetroFramework.Controls.MetroLabel numClientsLabel;
         private System.Windows.Forms.NumericUpDown numClients;
         private MetroFramework.Controls.MetroButton updateNumClients;
-        private MetroFramework.Controls.MetroComboBox clientSelection;
-        private MetroFramework.Controls.MetroComboBox qosLevel;
         private MetroFramework.Controls.MetroProgressSpinner progressSpinner;
         private MetroFramework.Controls.MetroLabel timeOngoing;
         private MetroFramework.Controls.MetroLabel progressLabel;
         private MetroFramework.Controls.MetroPanel loadingPanel;
         private System.Windows.Forms.Timer labelTimer;
+        private System.Windows.Forms.ComboBox qosLevel;
+        private System.Windows.Forms.ComboBox clientSelection;
     }
 }
 

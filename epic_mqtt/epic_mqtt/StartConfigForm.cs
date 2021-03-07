@@ -19,19 +19,20 @@ using uPLibrary.Networking.M2Mqtt.Messages;
 
 namespace mqtt_stresstest
 {
-    public partial class Form1 : MetroForm
+    public partial class StartConfigForm : MetroForm
     {
-        MqttClient client;
-        List<ClientConfiguration> clientConfigurations = new List<ClientConfiguration>();
-        int secondsElapsed = 0;
+        private MqttClient client;
+        private List<ClientConfiguration> clientConfigurations = new List<ClientConfiguration>();
+        private int secondsElapsed = 0;
+        private delegate void SafeCallDelegate(StressTestIncomingResults results, StressTestOutgoingConfiguration configuration);
 
-        public Form1()
+        public StartConfigForm()
         {
             InitializeComponent();
             clientConfigurations.Add(new ClientConfiguration());
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void StartConfigForm_Load(object sender, EventArgs e)
         {
             clientConfigGroupBox.Controls.Remove(timeOngoing);
             clientConfigGroupBox.Controls.Remove(progressLabel);
@@ -58,11 +59,6 @@ namespace mqtt_stresstest
             // Fetches and validates each input in the form
             string brokerHost = brokerIpAddrInput.Text;
             int brokerPort;
-
-            int numberOfClients;
-            int packetsPerSecond;
-            int duration;
-            int qosLevel;
 
             try
             {
@@ -182,18 +178,18 @@ namespace mqtt_stresstest
             timeOngoing.Text = elapsed;
         }
 
-        void onMessageReceived(object sender, MqttMsgPublishEventArgs getMsg)
+        private void onMessageReceived(object sender, MqttMsgPublishEventArgs getMsg)
         {
             string payload = Encoding.UTF8.GetString(getMsg.Message);
             StressTestIncomingResults results = JsonSerializer.Deserialize<StressTestIncomingResults>(payload);
-            Console.WriteLine($"Average Latency: {results.totalResults.AverageLatency}");
-            Console.WriteLine($"Maximum Latency: {results.totalResults.MaximumLatency}");
-            Console.WriteLine($"Minimum Latency: {results.totalResults.MinimumLatency}");
-            Console.WriteLine($"Packets Lost: {results.totalResults.PacketsLost}");
-            Console.WriteLine($"Client 1 Average Latency: {results.clientResults[0].AverageLatency}");
-            Console.WriteLine($"Client 1 Maximum Latency: {results.clientResults[0].MaximumLatency}");
-            Console.WriteLine($"Client 1 Minimum Latency: {results.clientResults[0].MinimumLatency}");
-            Console.WriteLine($"Client 1 Packets Lost: {results.clientResults[0].PacketsLost}");
+            this.Invoke(new SafeCallDelegate(ShowResultsWindow), new object[]{ results, new StressTestOutgoingConfiguration { Clients = this.clientConfigurations } });
+        }
+
+        private void ShowResultsWindow(StressTestIncomingResults results, StressTestOutgoingConfiguration configuration)
+        {
+            ResultsDisplayForm resultForm = new ResultsDisplayForm(results, configuration);
+            resultForm.Show();
+            this.Hide();
         }
     }
 }

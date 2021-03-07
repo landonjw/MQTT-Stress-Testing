@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace epic_mqtt
 {
-    class StressTestEntityResults
+    public class StressTestEntityResults
     {
         [JsonPropertyName("latency_average")]
         public decimal AverageLatency { get; set; } = -1;

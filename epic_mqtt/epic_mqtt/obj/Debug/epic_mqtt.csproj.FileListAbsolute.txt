@@ -45,7 +45,6 @@ C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\bin\Debug\MetroFramew
 C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\bin\Debug\MetroFramework.Fonts.dll
 C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\bin\Debug\M2Mqtt.Net.pdb
 C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\obj\Debug\epic_mqtt.csprojAssemblyReference.cache
-C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\obj\Debug\mqtt_stresstest.Form1.resources
 C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\obj\Debug\epic_mqtt.Properties.Resources.resources
 C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\obj\Debug\epic_mqtt.csproj.GenerateResource.cache
 C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\obj\Debug\epic_mqtt.csproj.CoreCompileInputs.cache
@@ -91,3 +90,5 @@ C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\bin\Debug\System.Text
 C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\bin\Debug\System.Text.Json.xml
 C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\bin\Debug\System.Threading.Tasks.Extensions.xml
 C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\bin\Debug\System.ValueTuple.xml
+C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\obj\Debug\mqtt_stresstest.ResultsDisplayForm.resources
+C:\Users\lando\Desktop\MQTT\Repository\epic_mqtt\epic_mqtt\obj\Debug\mqtt_stresstest.StartConfigForm.resources

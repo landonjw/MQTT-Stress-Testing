@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace epic_mqtt
 {
-    class ClientConfiguration
+    public class ClientConfiguration
     {
         private int _packetIntervalMS = 25;
         [JsonPropertyName("packet_interval_ms")]

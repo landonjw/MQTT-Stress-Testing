@@ -16,7 +16,7 @@ namespace mqtt_stresstest
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new StartConfigForm());
         }
     }
 }
