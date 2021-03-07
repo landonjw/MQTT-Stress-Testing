@@ -23,14 +23,14 @@ namespace epic_mqtt
             }
         }
 
-        private int _packetSizeBytes = 50;
+        private int _packetSizeBytes = 100;
         [JsonPropertyName("packet_size_bytes")]
         public int PacketSizeBytes
         {
             get => _packetSizeBytes;
             set
             {
-                if (value >= 50)
+                if (value >= 100)
                 {
                     _packetSizeBytes = value;
                 }

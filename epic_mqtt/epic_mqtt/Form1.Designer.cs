@@ -181,7 +181,7 @@
             this.packetSize.Name = "packetSize";
             this.packetSize.Size = new System.Drawing.Size(361, 25);
             this.packetSize.TabIndex = 27;
-            this.packetSize.Text = "50";
+            this.packetSize.Text = "100";
             this.packetSize.Leave += new System.EventHandler(this.packetSize_Leave);
             // 
             // packetInterval
@@ -269,6 +269,7 @@
             this.qosLevel.Name = "qosLevel";
             this.qosLevel.Size = new System.Drawing.Size(361, 30);
             this.qosLevel.TabIndex = 29;
+            this.qosLevel.SelectedIndexChanged += new System.EventHandler(this.qosLevel_SelectedIndexChanged);
             // 
             // Form1
             // 

@@ -104,7 +104,7 @@ namespace mqtt_stresstest
             string serializedConfiguration = JsonSerializer.Serialize(new StressTestOutgoingConfiguration { Clients = this.clientConfigurations });
 
             // Send a packet to the broker supplying all the arguments for starting a stress test
-            client.Publish("stress_test/master", Encoding.UTF8.GetBytes(serializedConfiguration));
+            client.Publish("stress_test/start", Encoding.UTF8.GetBytes(serializedConfiguration));
         }
 
         private void clientSelection_SelectedIndexChanged(object sender, EventArgs e)
