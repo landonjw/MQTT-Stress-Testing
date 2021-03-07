@@ -7,14 +7,14 @@
     <framework targetVersion="4.7.2" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="epic_mqtt.exe.manifest" size="5870">
+    <dependentAssembly dependencyType="install" codebase="epic_mqtt.exe.manifest" size="12157">
       <assemblyIdentity name="epic_mqtt.exe" version="1.0.0.5" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>AeBg+/wLqNYPhqqKw0XDIjRi06skT2EqH52CJib7V5M=</dsig:DigestValue>
+        <dsig:DigestValue>YDx8UL00x/s+LV2lNcrgNpXB0cm07dpvqu0XYG9lLXc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

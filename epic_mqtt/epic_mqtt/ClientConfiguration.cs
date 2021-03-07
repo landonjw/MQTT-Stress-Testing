@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace epic_mqtt
@@ -9,6 +10,7 @@ namespace epic_mqtt
     class ClientConfiguration
     {
         private int _packetIntervalMS = 25;
+        [JsonPropertyName("packet_interval_ms")]
         public int PacketIntervalMS
         {
             get => _packetIntervalMS;
@@ -22,6 +24,7 @@ namespace epic_mqtt
         }
 
         private int _packetSizeBytes = 50;
+        [JsonPropertyName("packet_size_bytes")]
         public int PacketSizeBytes
         {
             get => _packetSizeBytes;
@@ -35,6 +38,7 @@ namespace epic_mqtt
         }
 
         private int _durationSeconds = 15;
+        [JsonPropertyName("duration_seconds")]
         public int DurationSeconds
         {
             get => _durationSeconds;
@@ -48,6 +52,7 @@ namespace epic_mqtt
         }
 
         private int _qosLevel = 0;
+        [JsonPropertyName("qos_level")]
         public int QOSLevel
         {
             get => _qosLevel;
