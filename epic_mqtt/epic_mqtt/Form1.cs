@@ -204,7 +204,7 @@ namespace mqtt_stresstest
 
             while (numClients.Value < clientConfigurations.Count)
             {
-                Console.WriteLine("Removing.");
+                Console.WriteLine("Removing");
                 RemoveClientConfig();
             }
         }
