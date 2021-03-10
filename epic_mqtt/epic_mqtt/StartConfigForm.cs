@@ -38,6 +38,7 @@ namespace mqtt_stresstest
             clientConfigGroupBox.Controls.Remove(progressLabel);
             clientSelection.SelectedIndex = 0;
             LoadClientConfigIntoForm(0);
+            updateMessage.Text = "";
         }
 
         protected override void OnClosed(EventArgs e)
@@ -167,6 +168,8 @@ namespace mqtt_stresstest
                 Console.WriteLine("Removing");
                 RemoveClientConfig();
             }
+
+            updateMessage.Text = "Number of clients updated to " + numClients.Value + ".";
         }
 
         private void labelTimer_Tick(object sender, EventArgs e)
@@ -190,6 +193,37 @@ namespace mqtt_stresstest
             ResultsDisplayForm resultForm = new ResultsDisplayForm(results, configuration);
             resultForm.Show();
             this.Hide();
+        }
+
+        private void defaultSettingsButton_Click(object sender, EventArgs e)
+        {
+            // Updates current label text values to be set to default
+            packetInterval.Text = "25";
+            duration.Text = "15";
+            packetSize.Text = "100";
+            qosLevel.SelectedIndex = 0;
+            
+            // Updates current clientConfiguration object in list to be the current default set of values
+            clientConfigurations[clientSelection.SelectedIndex].PacketIntervalMS = Int32.Parse(packetInterval.Text);
+            clientConfigurations[clientSelection.SelectedIndex].DurationSeconds = Int32.Parse(duration.Text);
+            clientConfigurations[clientSelection.SelectedIndex].PacketSizeBytes = Int32.Parse(packetSize.Text);
+            clientConfigurations[clientSelection.SelectedIndex].QOSLevel = qosLevel.SelectedIndex;
+
+            updateMessage.Text = "Current client settings returned to default.";
+        }
+
+        private void applyAllButton_Click(object sender, EventArgs e)
+        {
+            // Loops through each client in clientConfigurations and sets their values to be equal to what's on screen.
+            foreach (ClientConfiguration client in clientConfigurations)
+            {
+                client.PacketIntervalMS = Int32.Parse(packetInterval.Text);
+                client.DurationSeconds = Int32.Parse(duration.Text);
+                client.PacketSizeBytes = Int32.Parse(packetSize.Text);
+                client.QOSLevel = qosLevel.SelectedIndex;
+            }
+
+            updateMessage.Text = "All clients updated with current settings.";
         }
     }
 }

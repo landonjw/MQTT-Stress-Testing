@@ -58,7 +58,8 @@ namespace epic_mqtt
             get => _qosLevel;
             set
             {
-                if (value == 1 || value == 2 || value == 3)
+                // Changed from 1|2|3 to 0|1|2
+                if (value == 0 || value == 1 || value == 2)
                 {
                     _qosLevel = value;
                 }
