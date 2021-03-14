@@ -9,7 +9,7 @@ namespace epic_mqtt
 {
     public class ClientConfiguration
     {
-        private int _packetIntervalMS = 25;
+        private int _packetIntervalMS = 1000;
         [JsonPropertyName("packet_interval_ms")]
         public int PacketIntervalMS
         {
@@ -37,7 +37,7 @@ namespace epic_mqtt
             }
         }
 
-        private int _durationSeconds = 15;
+        private int _durationSeconds = 3;
         [JsonPropertyName("duration_seconds")]
         public int DurationSeconds
         {

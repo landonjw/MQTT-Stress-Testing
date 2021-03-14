@@ -9,6 +9,8 @@ namespace epic_mqtt
 {
     public class StressTestOutgoingConfiguration
     {
+        [JsonPropertyName("grace_period_seconds")]
+        public int GracePeriodSeconds { get; set; }
         [JsonPropertyName("clients")]
         public List<ClientConfiguration> Clients { get; set; }
     }

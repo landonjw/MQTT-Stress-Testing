@@ -11,6 +11,7 @@ using epic_mqtt;
 using MetroFramework.Forms;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Windows.Forms;
@@ -22,6 +23,7 @@ namespace mqtt_stresstest
     public partial class StartConfigForm : MetroForm
     {
         private MqttClient client;
+        private int gracePeriodSeconds = 5;
         private List<ClientConfiguration> clientConfigurations = new List<ClientConfiguration>();
         private int secondsElapsed = 0;
         private delegate void SafeCallDelegate(StressTestIncomingResults results, StressTestOutgoingConfiguration configuration);
@@ -89,7 +91,8 @@ namespace mqtt_stresstest
                 return;
             }
 
-            string serializedConfiguration = JsonSerializer.Serialize(new StressTestOutgoingConfiguration { Clients = this.clientConfigurations });
+            StressTestOutgoingConfiguration config = new StressTestOutgoingConfiguration { GracePeriodSeconds = this.gracePeriodSeconds, Clients = this.clientConfigurations };
+            string serializedConfiguration = JsonSerializer.Serialize(config);
 
             // Send a packet to the broker supplying all the arguments for starting a stress test
             client.Publish("stress_test/start", Encoding.UTF8.GetBytes(serializedConfiguration));
@@ -116,6 +119,8 @@ namespace mqtt_stresstest
             clientSelection.Visible = false;
             clientConfigGroupBox.Visible = false;
             startStressTest.Visible = false;
+            gracePeriod.Visible = false;
+            gracePeriodLbl.Visible = false;
         }
 
         private void clientSelection_SelectedIndexChanged(object sender, EventArgs e)
@@ -224,6 +229,85 @@ namespace mqtt_stresstest
             }
 
             updateMessage.Text = "All clients updated with current settings.";
+        }
+
+        private void saveConfig_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            saveDialog.Filter = "Json files (*.json)|*.json";
+            saveDialog.Title = "Save Configuration";
+            saveDialog.ShowDialog();
+
+            if(saveDialog.FileName != "")
+            {
+                FileStream fs = (FileStream) saveDialog.OpenFile();
+
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                };
+                StressTestOutgoingConfiguration config = new StressTestOutgoingConfiguration { GracePeriodSeconds = this.gracePeriodSeconds, Clients = this.clientConfigurations };
+                string serializedConfiguration = JsonSerializer.Serialize(config, options);
+                byte[] bytes = Encoding.UTF8.GetBytes(serializedConfiguration);
+                fs.Write(bytes, 0, bytes.Length);
+
+                fs.Close();
+            }
+        }
+
+        private void loadConfig_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openDialog = new OpenFileDialog();
+            openDialog.Filter = "Json files (*.json)|*.json";
+            openDialog.Title = "Load Configuration";
+
+            if(openDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    Stream stream;
+                    if ((stream = openDialog.OpenFile()) != null)
+                    {
+                        using (stream)
+                        {
+                            StreamReader reader = new StreamReader(stream);
+                            string line;
+                            string totalJsonStr = "";
+                            while((line = reader.ReadLine()) != null)
+                            {
+                                totalJsonStr += line;
+                            }
+                            Console.WriteLine(totalJsonStr);
+                            StressTestOutgoingConfiguration config = JsonSerializer.Deserialize<StressTestOutgoingConfiguration>(totalJsonStr);
+                            gracePeriodSeconds = config.GracePeriodSeconds;
+                            clientConfigurations = config.Clients;
+                            OnLoadConfigFile();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message);
+                }
+            }
+        }
+
+        private void OnLoadConfigFile()
+        {
+            clientSelection.Items.Clear();
+            for(int i = 1; i <= clientConfigurations.Count; i++)
+            {
+                clientSelection.Items.Add($"Client {i}");
+            }
+            clientSelection.SelectedIndex = 0;
+            LoadClientConfigIntoForm(0);
+            numClients.Value = clientConfigurations.Count;
+            gracePeriod.Value = gracePeriodSeconds;
+        }
+
+        private void gracePeriod_ValueChanged(object sender, EventArgs e)
+        {
+            gracePeriodSeconds = (int) gracePeriod.Value;
         }
     }
 }

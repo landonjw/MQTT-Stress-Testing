@@ -32,6 +32,7 @@
             this.durationLabel = new MetroFramework.Controls.MetroLabel();
             this.qosLabel = new MetroFramework.Controls.MetroLabel();
             this.clientConfigGroupBox = new System.Windows.Forms.GroupBox();
+            this.qosLevel = new System.Windows.Forms.ComboBox();
             this.packetSize = new MetroFramework.Controls.MetroTextBox();
             this.packetInterval = new MetroFramework.Controls.MetroTextBox();
             this.packetSizeLabel = new MetroFramework.Controls.MetroLabel();
@@ -43,7 +44,6 @@
             this.averageLatency = new MetroFramework.Controls.MetroLabel();
             this.saveResults = new MetroFramework.Controls.MetroButton();
             this.resultsSelection = new System.Windows.Forms.ComboBox();
-            this.qosLevel = new System.Windows.Forms.ComboBox();
             this.clientConfigGroupBox.SuspendLayout();
             this.resultsGroupBox.SuspendLayout();
             this.SuspendLayout();
@@ -93,6 +93,20 @@
             this.clientConfigGroupBox.TabIndex = 23;
             this.clientConfigGroupBox.TabStop = false;
             this.clientConfigGroupBox.Text = "Client Configuration";
+            // 
+            // qosLevel
+            // 
+            this.qosLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.qosLevel.Enabled = false;
+            this.qosLevel.FormattingEnabled = true;
+            this.qosLevel.Items.AddRange(new object[] {
+            "0",
+            "1",
+            "2"});
+            this.qosLevel.Location = new System.Drawing.Point(8, 224);
+            this.qosLevel.Name = "qosLevel";
+            this.qosLevel.Size = new System.Drawing.Size(360, 24);
+            this.qosLevel.TabIndex = 28;
             // 
             // packetSize
             // 
@@ -192,6 +206,7 @@
             this.saveResults.Size = new System.Drawing.Size(373, 44);
             this.saveResults.TabIndex = 31;
             this.saveResults.Text = "SAVE RESULTS";
+            this.saveResults.Click += new System.EventHandler(this.saveResults_Click);
             // 
             // resultsSelection
             // 
@@ -204,20 +219,6 @@
             this.resultsSelection.Size = new System.Drawing.Size(373, 24);
             this.resultsSelection.TabIndex = 32;
             this.resultsSelection.SelectedIndexChanged += new System.EventHandler(this.resultsSelection_SelectedIndexChanged);
-            // 
-            // qosLevel
-            // 
-            this.qosLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.qosLevel.Enabled = false;
-            this.qosLevel.FormattingEnabled = true;
-            this.qosLevel.Items.AddRange(new object[] {
-            "0",
-            "1",
-            "2"});
-            this.qosLevel.Location = new System.Drawing.Point(8, 224);
-            this.qosLevel.Name = "qosLevel";
-            this.qosLevel.Size = new System.Drawing.Size(360, 24);
-            this.qosLevel.TabIndex = 28;
             // 
             // ResultsDisplayForm
             // 

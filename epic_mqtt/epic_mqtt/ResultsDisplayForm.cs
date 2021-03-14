@@ -11,6 +11,7 @@ using epic_mqtt;
 using MetroFramework.Forms;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Windows.Forms;
@@ -82,6 +83,26 @@ namespace mqtt_stresstest
             duration.Text = clientConfigurations.Clients[clientNum].DurationSeconds.ToString();
             packetSize.Text = clientConfigurations.Clients[clientNum].PacketSizeBytes.ToString();
             qosLevel.SelectedIndex = clientConfigurations.Clients[clientNum].QOSLevel;
+        }
+
+        private void saveResults_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            saveDialog.Filter = "CSV files (*.csv)|*.csv";
+            saveDialog.Title = "Save Configuration";
+            saveDialog.ShowDialog();
+
+            if (saveDialog.FileName != "")
+            {
+                FileStream fs = (FileStream)saveDialog.OpenFile();
+                foreach(String line in results.ToCSV())
+                {
+                    byte[] bytes = Encoding.UTF8.GetBytes(line);
+                    fs.Write(bytes, 0, bytes.Length);
+                }
+
+                fs.Close();
+            }
         }
     }
 }
