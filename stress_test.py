@@ -7,11 +7,12 @@ import latency_results
 
 publishers = []
 
-broker_ip = "192.168.2.44"
-broker_port = 1883
+broker_ip = "127.0.0.1"
+broker_port = 11883
 start_topic = 'stress_test/start'
 results_topic = 'stress_test/results'
 master_client = None
+grace_period_seconds = 5
 
 def create_publisher(id, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes):
     client = stress_test_client.StressTestClient(id, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes)
@@ -22,13 +23,16 @@ def create_master_client():
     global master_client
     master_client = mqtt.Client(client_id = 'Stress Test Master')
     master_client.on_message = on_master_receive_message
-    master_client.connect(broker_ip, broker_port, 60)
+    master_client.connect(broker_ip, broker_port, 600)
     master_client.subscribe(start_topic, 1)
     master_client.loop_start()
+    print('Connecting...')
 
 def on_master_receive_message(client, userdata, msg):
     packet = json.loads(msg.payload)
     print(json.dumps(packet, indent=4))
+    global grace_period_seconds
+    grace_period_seconds = packet["grace_period_seconds"]
     for i in range(0, len(packet["clients"])):
         client = packet["clients"][i]
         create_publisher(i, client["packet_interval_ms"], client["duration_seconds"], client["qos_level"], client["packet_size_bytes"])
@@ -42,7 +46,7 @@ def start_publishing():
     task_manager.start(gather_results)
 
 def gather_results():
-    time.sleep(5)
+    time.sleep(grace_period_seconds)
     publisher_results = []
     for publisher in publishers:
         publisher_results.append(publisher.results)
