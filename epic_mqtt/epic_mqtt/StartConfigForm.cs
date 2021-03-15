@@ -139,8 +139,8 @@ namespace mqtt_stresstest
 
         private void RemoveClientConfig()
         {
-            clientConfigurations.RemoveAt(clientConfigurations.Count);
-            clientSelection.Items.RemoveAt(clientSelection.Items.Count);
+            clientConfigurations.RemoveAt(clientConfigurations.Count-1);
+            clientSelection.Items.RemoveAt(clientSelection.Items.Count-1);
         }
 
         private void packetInterval_Leave(object sender, EventArgs e)
