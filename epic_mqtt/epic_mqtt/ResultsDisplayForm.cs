@@ -104,5 +104,12 @@ namespace mqtt_stresstest
                 fs.Close();
             }
         }
+
+        private void backButton_Click(object sender, EventArgs e)
+        {
+            StartConfigForm startConfig = new StartConfigForm();
+            this.Hide();
+            startConfig.Show();
+        }
     }
 }
