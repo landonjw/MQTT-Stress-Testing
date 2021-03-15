@@ -134,6 +134,7 @@
     <Compile Include="StressTestEntityResults.cs" />
     <Compile Include="StressTestIncomingResults.cs" />
     <Compile Include="StressTestOutgoingConfiguration.cs" />
+    <Compile Include="StressTestSettings.cs" />
     <EmbeddedResource Include="ResultsDisplayForm.resx">
       <DependentUpon>ResultsDisplayForm.cs</DependentUpon>
     </EmbeddedResource>

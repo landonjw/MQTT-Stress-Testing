@@ -26,7 +26,7 @@ namespace mqtt_stresstest
         private int gracePeriodSeconds = 5;
         private List<ClientConfiguration> clientConfigurations = new List<ClientConfiguration>();
         private int secondsElapsed = 0;
-        private delegate void SafeCallDelegate(StressTestIncomingResults results, StressTestOutgoingConfiguration configuration);
+        private delegate void SafeCallDelegate(StressTestIncomingResults results, StressTestOutgoingConfiguration configuration, StressTestSettings settings);
 
         public StartConfigForm()
         {
@@ -121,6 +121,9 @@ namespace mqtt_stresstest
             startStressTest.Visible = false;
             gracePeriod.Visible = false;
             gracePeriodLbl.Visible = false;
+            updateMessage.Visible = false;
+            loadConfig.Visible = false;
+            saveConfig.Visible = false;
         }
 
         private void clientSelection_SelectedIndexChanged(object sender, EventArgs e)
@@ -190,12 +193,18 @@ namespace mqtt_stresstest
         {
             string payload = Encoding.UTF8.GetString(getMsg.Message);
             StressTestIncomingResults results = JsonSerializer.Deserialize<StressTestIncomingResults>(payload);
-            this.Invoke(new SafeCallDelegate(ShowResultsWindow), new object[]{ results, new StressTestOutgoingConfiguration { Clients = this.clientConfigurations } });
+            StressTestSettings settings = new StressTestSettings();
+            settings.BrokerHost = brokerIpAddrInput.Text;
+            settings.BrokerPort = Int32.Parse(brokerPortInput.Text);
+            settings.GracePeriod = (int)gracePeriod.Value;
+            settings.NumClients = (int)numClients.Value;
+            this.Invoke(new SafeCallDelegate(ShowResultsWindow), new object[]{ results, new StressTestOutgoingConfiguration { Clients = this.clientConfigurations }, settings });
         }
 
-        private void ShowResultsWindow(StressTestIncomingResults results, StressTestOutgoingConfiguration configuration)
+        private void ShowResultsWindow(StressTestIncomingResults results, StressTestOutgoingConfiguration configuration, StressTestSettings settings)
         {
-            ResultsDisplayForm resultForm = new ResultsDisplayForm(results, configuration);
+            
+            ResultsDisplayForm resultForm = new ResultsDisplayForm(results, configuration, settings);
             resultForm.Show();
             this.Hide();
         }
@@ -308,6 +317,37 @@ namespace mqtt_stresstest
         private void gracePeriod_ValueChanged(object sender, EventArgs e)
         {
             gracePeriodSeconds = (int) gracePeriod.Value;
+        }
+
+        /// <summary>
+        /// When returned to from the ResultsDisplayForm, populates the fields based off of the previously given data.
+        /// </summary>
+        /// <param name="settings">Base settings (i.e. broker IP, broker port, number of clients, grace period)</param>
+        /// <param name="resultClientConfigurations">Client configurations (packet rate, duration, etc.)</param>
+        public void GrabResultSettings(StressTestSettings settings, StressTestOutgoingConfiguration resultClientConfigurations)
+        {
+            // Sets field texts accordingly
+            brokerIpAddrInput.Text = settings.BrokerHost;
+            brokerPortInput.Text = settings.BrokerPort.ToString();
+            numClients.Value = settings.NumClients;
+            gracePeriod.Value = settings.GracePeriod;
+
+            // Updates this clientConfigurations files with the clients from the ResultsDisplayForm
+
+            clientConfigurations = resultClientConfigurations.Clients;
+
+            // Clears out current comboBox
+            clientSelection.Items.Clear();
+
+            // Updates combobox values to be accurate to the newly populated clientConfigurations amounts
+            for (int i = 1; i <= clientConfigurations.Count; i++)
+            {
+                clientSelection.Items.Add($"Client {i}");
+            }
+            
+            // Sets default index to 0 for good measure.
+            clientSelection.SelectedIndex = 0;
+
         }
     }
 }

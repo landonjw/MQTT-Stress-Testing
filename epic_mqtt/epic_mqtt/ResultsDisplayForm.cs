@@ -24,11 +24,13 @@ namespace mqtt_stresstest
     {
         private StressTestIncomingResults results;
         private StressTestOutgoingConfiguration clientConfigurations;
+        private StressTestSettings settings;
 
-        public ResultsDisplayForm(StressTestIncomingResults results, StressTestOutgoingConfiguration configurations)
+        public ResultsDisplayForm(StressTestIncomingResults results, StressTestOutgoingConfiguration configurations, StressTestSettings settings)
         {
             this.results = results;
             this.clientConfigurations = configurations;
+            this.settings = settings;
             InitializeComponent();
         }
 
@@ -105,9 +107,16 @@ namespace mqtt_stresstest
             }
         }
 
+        /// <summary>
+        /// Returns to StartConfigForm
+        /// </summary>
+        /// <param name="sender">Default sender</param>
+        /// <param name="e">Default EventArgs</param>
         private void backButton_Click(object sender, EventArgs e)
         {
             StartConfigForm startConfig = new StartConfigForm();
+            // Uses the settings from here to populate the newly created startConfig
+            startConfig.GrabResultSettings(settings, clientConfigurations);
             this.Hide();
             startConfig.Show();
         }
