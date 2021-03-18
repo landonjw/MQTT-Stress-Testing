@@ -211,11 +211,14 @@ namespace mqtt_stresstest
 
         private void defaultSettingsButton_Click(object sender, EventArgs e)
         {
+            // Creates a new ClientConfiguration() object to grab the default created values
+            ClientConfiguration defaultConfiguration = new ClientConfiguration();
+            
             // Updates current label text values to be set to default
-            packetInterval.Text = "25";
-            duration.Text = "15";
-            packetSize.Text = "100";
-            qosLevel.SelectedIndex = 0;
+            packetInterval.Text = defaultConfiguration.PacketIntervalMS.ToString();
+            duration.Text = defaultConfiguration.DurationSeconds.ToString();
+            packetSize.Text = defaultConfiguration.PacketSizeBytes.ToString();
+            qosLevel.SelectedIndex = defaultConfiguration.QOSLevel;
             
             // Updates current clientConfiguration object in list to be the current default set of values
             clientConfigurations[clientSelection.SelectedIndex].PacketIntervalMS = Int32.Parse(packetInterval.Text);
