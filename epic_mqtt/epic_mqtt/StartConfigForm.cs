@@ -145,17 +145,43 @@ namespace mqtt_stresstest
 
         private void packetInterval_Leave(object sender, EventArgs e)
         {
-            clientConfigurations[clientSelection.SelectedIndex].PacketIntervalMS = Int32.Parse(packetInterval.Text);
+            try
+            {
+                clientConfigurations[clientSelection.SelectedIndex].PacketIntervalMS = Int32.Parse(packetInterval.Text);
+            }
+            catch
+            {
+                packetInterval.Text = clientConfigurations[clientSelection.SelectedIndex].PacketIntervalMS.ToString();
+                updateMessage.Text = "Invalid input in '" + packetIntervalLabel.Text + "' field.";
+            }
+            
         }
 
         private void duration_Leave(object sender, EventArgs e)
         {
-            clientConfigurations[clientSelection.SelectedIndex].DurationSeconds = Int32.Parse(duration.Text);
+            try
+            {
+                clientConfigurations[clientSelection.SelectedIndex].DurationSeconds = Int32.Parse(duration.Text);
+            }
+            catch
+            {
+                duration.Text = clientConfigurations[clientSelection.SelectedIndex].DurationSeconds.ToString();
+                updateMessage.Text = "Invalid input in '" + durationLabel.Text + "' field.";
+            }
+            
         }
 
         private void packetSize_Leave(object sender, EventArgs e)
         {
-            clientConfigurations[clientSelection.SelectedIndex].PacketSizeBytes = Int32.Parse(packetSize.Text);
+            try
+            {
+                clientConfigurations[clientSelection.SelectedIndex].PacketSizeBytes = Int32.Parse(packetSize.Text);
+            }
+            catch
+            {
+                packetSize.Text = clientConfigurations[clientSelection.SelectedIndex].PacketSizeBytes.ToString();
+                updateMessage.Text = "Invalid input in '" +packetSizeLabel.Text +"' field.";
+            }
         }
 
         private void qosLevel_SelectedIndexChanged(object sender, EventArgs e)
