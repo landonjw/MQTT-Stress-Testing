@@ -1,13 +1,13 @@
 import time
 import json
-import paho.mqtt.client as mqtt
+import shadow.paho.mqtt.modified_client as mqtt
 import stress_test_client
 import task_manager
 import latency_results
 
 publishers = []
 
-broker_ip = "127.0.0.1"
+broker_ip = "localhost"
 broker_port = 11883
 start_topic = 'stress_test/start'
 results_topic = 'stress_test/results'
@@ -27,8 +27,75 @@ def create_master_client():
     master_client.subscribe(start_topic, 1)
     master_client.loop_start()
     print('Connecting...')
+    start_data = {
+        "grace_period_seconds": 30,
+        "clients": [
+            {
+                "packet_interval_ms": 100,
+                "packet_size_bytes": 1000000,
+                "duration_seconds": 10,
+                "qos_level": 0,
+            },
+            {
+                "packet_interval_ms": 100,
+                "packet_size_bytes": 1000000,
+                "duration_seconds": 10,
+                "qos_level": 0,
+            },
+            {
+                "packet_interval_ms": 100,
+                "packet_size_bytes": 1000000,
+                "duration_seconds": 10,
+                "qos_level": 0,
+            },
+            {
+                "packet_interval_ms": 100,
+                "packet_size_bytes": 1000000,
+                "duration_seconds": 10,
+                "qos_level": 0,
+            },
+            {
+                "packet_interval_ms": 100,
+                "packet_size_bytes": 1000000,
+                "duration_seconds": 10,
+                "qos_level": 0,
+            },
+            {
+                "packet_interval_ms": 100,
+                "packet_size_bytes": 1000000,
+                "duration_seconds": 10,
+                "qos_level": 0,
+            },
+            {
+                "packet_interval_ms": 100,
+                "packet_size_bytes": 1000000,
+                "duration_seconds": 10,
+                "qos_level": 0,
+            },
+            {
+                "packet_interval_ms": 100,
+                "packet_size_bytes": 1000000,
+                "duration_seconds": 10,
+                "qos_level": 0,
+            },
+            {
+                "packet_interval_ms": 100,
+                "packet_size_bytes": 1000000,
+                "duration_seconds": 10,
+                "qos_level": 0,
+            },
+            {
+                "packet_interval_ms": 100,
+                "packet_size_bytes": 1000000,
+                "duration_seconds": 10,
+                "qos_level": 0,
+            }
+        ]
+    }
+    master_client.publish(start_topic, json.dumps(start_data))
 
 def on_master_receive_message(client, userdata, msg):
+    print(msg.payload)
     packet = json.loads(msg.payload)
     print(json.dumps(packet, indent=4))
     global grace_period_seconds
@@ -67,7 +134,10 @@ def gather_results():
             "packets_lost": publisher_results[i].get_packets_lost()
         })
     print('Sending results')
-    master_client.publish(results_topic, json.dumps(results));
+    print(json.dumps(results, indent = 4))
+    master_client.publish(results_topic, json.dumps(results))
+    for publisher in publishers:
+        publisher.client.disconnect()
 
 create_master_client()
 while True:

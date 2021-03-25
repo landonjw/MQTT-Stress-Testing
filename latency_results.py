@@ -1,12 +1,23 @@
 class LatencyResultsProcessor:
     def __init__(self, total_packets):
         self.packet_data = []
+        self.offset = []
         self.total_packets = total_packets
         for i in range(0, total_packets):
             self.packet_data.append(None)
+            self.offset.append(None)
         
     def add_latency_info(self, packet_num, latency):
-        self.packet_data[packet_num] = latency
+        if self.offset[packet_num] != None:
+            self.packet_data[packet_num] = latency - self.offset[packet_num]
+        else:
+            self.packet_data[packet_num] = latency
+
+    def add_offset(self, packet_num, offset):
+        if self.packet_data[packet_num] != None:
+            self.packet_data[packet_num] = packet_data[packet_num] - offset
+        else:
+            self.offset[packet_num] = offset
     
     def get_average_latency(self):
         total_latency = 0

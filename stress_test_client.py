@@ -1,10 +1,11 @@
 import latency_results
 import math
-import paho.mqtt.client as mqtt
+import shadow.paho.mqtt.client as mqtt
 import json
 import time
 import sys
 import random
+import byte_array_pool
 
 class StressTestClient:
     def __init__(self, id, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes):
@@ -14,17 +15,21 @@ class StressTestClient:
         self.total_packets_to_send = math.floor((1000 / packet_interval_ms) * duration_seconds)
         self.qos_level = qos_level
         self.packet_size_bytes = packet_size_bytes
-        self.packet_payload = bytearray(packet_size_bytes)
+        self.packet_payload = byte_array_pool.get_or_create_byte_array(self)
         self.current_packet = 0
         self.results = latency_results.LatencyResultsProcessor(self.total_packets_to_send)
 
     def initialize_client(self, broker_ip, broker_port):
         self.client = mqtt.Client(client_id = f'Stress Test Publisher {self.id}')
         self.client.on_message = self.on_receive_message
+        # self.client.on_log = self.on_log
 
         self.client.connect(broker_ip, broker_port, 60)
         self.client.subscribe(self.topic, self.qos_level)
         self.client.loop_start()
+        
+    def on_log(self, client, userdata, level, buf):
+        print("log: ",buf)
 
     def publish_message(self):
         time_in_milliseconds = time.time_ns() // 1_000_000
@@ -36,14 +41,19 @@ class StressTestClient:
 
         payload_byte_arr = bytearray(json.dumps(message).encode('utf-8'))
         for i in range(0, len(payload_byte_arr)):
-            self.packet_payload[i] = payload_byte_arr[i]
+            self.packet_payload[i + 100] = payload_byte_arr[i]
             
-        self.client.publish(self.topic, self.packet_payload)
+        publish = self.client.publish(self.topic, self.packet_payload)
+        publish.wait_for_publish()
 
-        for i in range(0, len(payload_byte_arr)):
+        for i in range(0, 100 + len(payload_byte_arr)):
             self.packet_payload[i] = 0
 
+        time_in_milliseconds_now = time.time_ns() // 1_000_000
+        self.results.add_offset(self.current_packet, time_in_milliseconds_now - time_in_milliseconds)
         self.current_packet = self.current_packet + 1
+
+        print(f'Publish Delay {time_in_milliseconds_now - time_in_milliseconds}')
 
     def get_packet_size(self):
         if self.min_packet_size_bytes <= 0 or self.max_packet_size_bytes <= 0:
@@ -56,19 +66,23 @@ class StressTestClient:
     """Gets the true data from a packet payload that has been appended with garbage to increase size"""
     def decode_payload(self, payload):
         # Convert the payload from immutable bytes into a mutable byte array
-        payload_byte_arr = bytearray(payload)
         sanitized_payload_byte_arr = bytearray()
-        for i in range(0, len(payload_byte_arr)):
-            if payload_byte_arr[i] != 0:
-                sanitized_payload_byte_arr.append(payload_byte_arr[i])
+        hit_message = False
+        # print(f'Payload: {payload}')
+        for i in range(0, len(payload)):
+            if payload[i] != 0:
+                hit_message = True
+                sanitized_payload_byte_arr.append(payload[i])
             else:
-                break
+                if hit_message == True :
+                    break
+        # print(f'Sanitized: {sanitized_payload_byte_arr}')
         return sanitized_payload_byte_arr
 
     def on_receive_message(self, client, userdata, msg):
-        packet_data = json.loads(self.decode_payload(msg.payload))
-
         time_in_milliseconds = time.time_ns() // 1_000_000
+        packet_data = json.loads(self.decode_payload(msg.payload))
+        
         latency = time_in_milliseconds - packet_data["time_sent"]
         packet_num = packet_data["packet_num"]
         
