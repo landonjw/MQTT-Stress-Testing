@@ -376,7 +376,7 @@ namespace mqtt_stresstest
             
             // Sets default index to 0 for good measure.
             clientSelection.SelectedIndex = 0;
-
+            19
         }
     }
 }

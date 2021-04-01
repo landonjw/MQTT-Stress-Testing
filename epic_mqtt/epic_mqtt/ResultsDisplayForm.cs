@@ -97,7 +97,7 @@ namespace mqtt_stresstest
             if (saveDialog.FileName != "")
             {
                 FileStream fs = (FileStream)saveDialog.OpenFile();
-                foreach(String line in results.ToCSV())
+                foreach(String line in results.ToCSV(clientConfigurations))
                 {
                     byte[] bytes = Encoding.UTF8.GetBytes(line);
                     fs.Write(bytes, 0, bytes.Length);

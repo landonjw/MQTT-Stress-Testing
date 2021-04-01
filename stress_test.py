@@ -7,8 +7,8 @@ import latency_results
 
 publishers = []
 
-broker_ip = "localhost"
-broker_port = 11883
+broker_ip = "192.168.2.44"
+broker_port = 1883
 start_topic = 'stress_test/start'
 results_topic = 'stress_test/results'
 master_client = None
@@ -23,76 +23,10 @@ def create_master_client():
     global master_client
     master_client = mqtt.Client(client_id = 'Stress Test Master')
     master_client.on_message = on_master_receive_message
-    master_client.connect(broker_ip, broker_port, 600)
+    master_client.connect(broker_ip, broker_port, 6000)
     master_client.subscribe(start_topic, 1)
     master_client.loop_start()
     print('Connecting...')
-    start_data = {
-        "grace_period_seconds": 30,
-        "clients": [
-            {
-                "packet_interval_ms": 100,
-                "packet_size_bytes": 1000000,
-                "duration_seconds": 10,
-                "qos_level": 0,
-            },
-            {
-                "packet_interval_ms": 100,
-                "packet_size_bytes": 1000000,
-                "duration_seconds": 10,
-                "qos_level": 0,
-            },
-            {
-                "packet_interval_ms": 100,
-                "packet_size_bytes": 1000000,
-                "duration_seconds": 10,
-                "qos_level": 0,
-            },
-            {
-                "packet_interval_ms": 100,
-                "packet_size_bytes": 1000000,
-                "duration_seconds": 10,
-                "qos_level": 0,
-            },
-            {
-                "packet_interval_ms": 100,
-                "packet_size_bytes": 1000000,
-                "duration_seconds": 10,
-                "qos_level": 0,
-            },
-            {
-                "packet_interval_ms": 100,
-                "packet_size_bytes": 1000000,
-                "duration_seconds": 10,
-                "qos_level": 0,
-            },
-            {
-                "packet_interval_ms": 100,
-                "packet_size_bytes": 1000000,
-                "duration_seconds": 10,
-                "qos_level": 0,
-            },
-            {
-                "packet_interval_ms": 100,
-                "packet_size_bytes": 1000000,
-                "duration_seconds": 10,
-                "qos_level": 0,
-            },
-            {
-                "packet_interval_ms": 100,
-                "packet_size_bytes": 1000000,
-                "duration_seconds": 10,
-                "qos_level": 0,
-            },
-            {
-                "packet_interval_ms": 100,
-                "packet_size_bytes": 1000000,
-                "duration_seconds": 10,
-                "qos_level": 0,
-            }
-        ]
-    }
-    master_client.publish(start_topic, json.dumps(start_data))
 
 def on_master_receive_message(client, userdata, msg):
     print(msg.payload)
