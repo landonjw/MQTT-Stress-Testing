@@ -376,7 +376,57 @@ namespace mqtt_stresstest
             
             // Sets default index to 0 for good measure.
             clientSelection.SelectedIndex = 0;
-            19
+        }
+
+        private void ipAdressLabel_MouseHover(object sender, EventArgs e)
+        {
+            genericToolTip.Show("Input your Broker's IP Address here.", ipAdressLabel);
+        }
+
+        private void brokerPortLabel_MouseHover(object sender, EventArgs e)
+        {
+            genericToolTip.Show("Input your Broker's port number here.", brokerPortLabel);
+        }
+
+        private void numClientsLabel_MouseHover(object sender, EventArgs e)
+        {
+            genericToolTip.Show("Changing this value and then clicking the 'update' button will update the number of clients [Max: 200].", numClientsLabel);
+        }
+
+        private void gracePeriodLbl_MouseHover(object sender, EventArgs e)
+        {
+            genericToolTip.Show("Changing this value will allow more processing time for the stress test." +
+                "\nIf you are running tests with larger packet sizes and are sufferring from packet loss," +
+                "\nconsider increasing this value.", gracePeriodLbl);
+        }
+
+        private void packetIntervalLabel_MouseHover(object sender, EventArgs e)
+        {
+            genericToolTip.Show("This value controls the rate at which packets are sent." +
+                "\nNote: updates are limited to 25ms intervals; make sure your number is a" +
+                "\nmultiple of 25.", packetIntervalLabel);
+        }
+
+        private void durationLabel_MouseHover(object sender, EventArgs e)
+        {
+            genericToolTip.Show("This value specifies the duration of the stress test for this client." +
+                "\nSingle number values only; decimals will not work.", durationLabel);
+        }
+
+        private void packetSizeLabel_MouseHover(object sender, EventArgs e)
+        {
+            genericToolTip.Show("This value dictates the packet size, in bytes." +
+                "\nMQTT supports a max packet size of 256MB (256000000 bytes); however" +
+                "\npractical packet size maximums are usually upwards of 64kb on the TCP" +
+                "\nprotocol. Consider changing the 'Grace Period' value when going past 1MB.", packetSizeLabel);
+        }
+
+        private void qosLabel_MouseHover(object sender, EventArgs e)
+        {
+            genericToolTip.Show("This value dictates the QoS Level." +
+                "\n0 = At most once" +
+                "\n1 = At least once" +
+                "\n2 = Exactly once", qosLabel);
         }
     }
 }

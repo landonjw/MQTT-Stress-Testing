@@ -59,6 +59,7 @@
             this.saveConfig = new MetroFramework.Controls.MetroButton();
             this.gracePeriodLbl = new MetroFramework.Controls.MetroLabel();
             this.gracePeriod = new System.Windows.Forms.NumericUpDown();
+            this.genericToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.clientConfigGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numClients)).BeginInit();
             this.loadingPanel.SuspendLayout();
@@ -68,7 +69,7 @@
             // brokerIpAddrInput
             // 
             this.brokerIpAddrInput.Location = new System.Drawing.Point(16, 89);
-            this.brokerIpAddrInput.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.brokerIpAddrInput.Margin = new System.Windows.Forms.Padding(2);
             this.brokerIpAddrInput.Name = "brokerIpAddrInput";
             this.brokerIpAddrInput.Size = new System.Drawing.Size(163, 20);
             this.brokerIpAddrInput.TabIndex = 2;
@@ -83,11 +84,12 @@
             this.ipAdressLabel.Size = new System.Drawing.Size(114, 19);
             this.ipAdressLabel.TabIndex = 6;
             this.ipAdressLabel.Text = "Broker IP Address";
+            this.ipAdressLabel.MouseHover += new System.EventHandler(this.ipAdressLabel_MouseHover);
             // 
             // brokerPortInput
             // 
             this.brokerPortInput.Location = new System.Drawing.Point(194, 89);
-            this.brokerPortInput.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.brokerPortInput.Margin = new System.Windows.Forms.Padding(2);
             this.brokerPortInput.Name = "brokerPortInput";
             this.brokerPortInput.Size = new System.Drawing.Size(104, 20);
             this.brokerPortInput.TabIndex = 7;
@@ -102,6 +104,7 @@
             this.brokerPortLabel.Size = new System.Drawing.Size(77, 19);
             this.brokerPortLabel.TabIndex = 8;
             this.brokerPortLabel.Text = "Broker Port";
+            this.brokerPortLabel.MouseHover += new System.EventHandler(this.brokerPortLabel_MouseHover);
             // 
             // packetIntervalLabel
             // 
@@ -112,11 +115,12 @@
             this.packetIntervalLabel.Size = new System.Drawing.Size(127, 19);
             this.packetIntervalLabel.TabIndex = 13;
             this.packetIntervalLabel.Text = "Packets Interval (ms)";
+            this.packetIntervalLabel.MouseHover += new System.EventHandler(this.packetIntervalLabel_MouseHover);
             // 
             // duration
             // 
             this.duration.Location = new System.Drawing.Point(6, 87);
-            this.duration.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.duration.Margin = new System.Windows.Forms.Padding(2);
             this.duration.Name = "duration";
             this.duration.Size = new System.Drawing.Size(271, 20);
             this.duration.TabIndex = 14;
@@ -132,6 +136,7 @@
             this.durationLabel.Size = new System.Drawing.Size(76, 19);
             this.durationLabel.TabIndex = 15;
             this.durationLabel.Text = "Duration (s)";
+            this.durationLabel.MouseHover += new System.EventHandler(this.durationLabel_MouseHover);
             // 
             // qosLabel
             // 
@@ -142,11 +147,12 @@
             this.qosLabel.Size = new System.Drawing.Size(68, 19);
             this.qosLabel.TabIndex = 18;
             this.qosLabel.Text = "QoS Level";
+            this.qosLabel.MouseHover += new System.EventHandler(this.qosLabel_MouseHover);
             // 
             // startStressTest
             // 
             this.startStressTest.Location = new System.Drawing.Point(16, 546);
-            this.startStressTest.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.startStressTest.Margin = new System.Windows.Forms.Padding(2);
             this.startStressTest.Name = "startStressTest";
             this.startStressTest.Size = new System.Drawing.Size(280, 36);
             this.startStressTest.TabIndex = 19;
@@ -166,9 +172,9 @@
             this.clientConfigGroupBox.Controls.Add(this.durationLabel);
             this.clientConfigGroupBox.Controls.Add(this.packetIntervalLabel);
             this.clientConfigGroupBox.Location = new System.Drawing.Point(16, 233);
-            this.clientConfigGroupBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.clientConfigGroupBox.Margin = new System.Windows.Forms.Padding(2);
             this.clientConfigGroupBox.Name = "clientConfigGroupBox";
-            this.clientConfigGroupBox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.clientConfigGroupBox.Padding = new System.Windows.Forms.Padding(2);
             this.clientConfigGroupBox.Size = new System.Drawing.Size(281, 263);
             this.clientConfigGroupBox.TabIndex = 23;
             this.clientConfigGroupBox.TabStop = false;
@@ -201,7 +207,7 @@
             "1",
             "2"});
             this.qosLevel.Location = new System.Drawing.Point(6, 180);
-            this.qosLevel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.qosLevel.Margin = new System.Windows.Forms.Padding(2);
             this.qosLevel.Name = "qosLevel";
             this.qosLevel.Size = new System.Drawing.Size(271, 21);
             this.qosLevel.TabIndex = 28;
@@ -210,7 +216,7 @@
             // packetSize
             // 
             this.packetSize.Location = new System.Drawing.Point(6, 133);
-            this.packetSize.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.packetSize.Margin = new System.Windows.Forms.Padding(2);
             this.packetSize.Name = "packetSize";
             this.packetSize.Size = new System.Drawing.Size(271, 20);
             this.packetSize.TabIndex = 27;
@@ -220,7 +226,7 @@
             // packetInterval
             // 
             this.packetInterval.Location = new System.Drawing.Point(6, 41);
-            this.packetInterval.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.packetInterval.Margin = new System.Windows.Forms.Padding(2);
             this.packetInterval.Name = "packetInterval";
             this.packetInterval.Size = new System.Drawing.Size(271, 20);
             this.packetInterval.TabIndex = 26;
@@ -236,6 +242,7 @@
             this.packetSizeLabel.Size = new System.Drawing.Size(113, 19);
             this.packetSizeLabel.TabIndex = 25;
             this.packetSizeLabel.Text = "Packet size (bytes)";
+            this.packetSizeLabel.MouseHover += new System.EventHandler(this.packetSizeLabel_MouseHover);
             // 
             // numClientsLabel
             // 
@@ -246,6 +253,7 @@
             this.numClientsLabel.Size = new System.Drawing.Size(116, 19);
             this.numClientsLabel.TabIndex = 25;
             this.numClientsLabel.Text = "Number of Clients";
+            this.numClientsLabel.MouseHover += new System.EventHandler(this.numClientsLabel_MouseHover);
             // 
             // numClients
             // 
@@ -281,7 +289,7 @@
             // progressSpinner
             // 
             this.progressSpinner.Location = new System.Drawing.Point(14, 18);
-            this.progressSpinner.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.progressSpinner.Margin = new System.Windows.Forms.Padding(2);
             this.progressSpinner.Maximum = 100;
             this.progressSpinner.Name = "progressSpinner";
             this.progressSpinner.Size = new System.Drawing.Size(212, 237);
@@ -316,7 +324,7 @@
             this.loadingPanel.HorizontalScrollbarHighlightOnWheel = false;
             this.loadingPanel.HorizontalScrollbarSize = 8;
             this.loadingPanel.Location = new System.Drawing.Point(37, 88);
-            this.loadingPanel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.loadingPanel.Margin = new System.Windows.Forms.Padding(2);
             this.loadingPanel.Name = "loadingPanel";
             this.loadingPanel.Size = new System.Drawing.Size(240, 316);
             this.loadingPanel.TabIndex = 30;
@@ -337,7 +345,7 @@
             this.clientSelection.Items.AddRange(new object[] {
             "Client 1"});
             this.clientSelection.Location = new System.Drawing.Point(16, 206);
-            this.clientSelection.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.clientSelection.Margin = new System.Windows.Forms.Padding(2);
             this.clientSelection.Name = "clientSelection";
             this.clientSelection.Size = new System.Drawing.Size(282, 21);
             this.clientSelection.TabIndex = 31;
@@ -356,7 +364,7 @@
             // loadConfig
             // 
             this.loadConfig.Location = new System.Drawing.Point(16, 502);
-            this.loadConfig.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.loadConfig.Margin = new System.Windows.Forms.Padding(2);
             this.loadConfig.Name = "loadConfig";
             this.loadConfig.Size = new System.Drawing.Size(140, 36);
             this.loadConfig.TabIndex = 33;
@@ -366,7 +374,7 @@
             // saveConfig
             // 
             this.saveConfig.Location = new System.Drawing.Point(160, 502);
-            this.saveConfig.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.saveConfig.Margin = new System.Windows.Forms.Padding(2);
             this.saveConfig.Name = "saveConfig";
             this.saveConfig.Size = new System.Drawing.Size(135, 36);
             this.saveConfig.TabIndex = 34;
@@ -382,6 +390,7 @@
             this.gracePeriodLbl.Size = new System.Drawing.Size(143, 19);
             this.gracePeriodLbl.TabIndex = 36;
             this.gracePeriodLbl.Text = "Grace Period (seconds)";
+            this.gracePeriodLbl.MouseHover += new System.EventHandler(this.gracePeriodLbl_MouseHover);
             // 
             // gracePeriod
             // 
@@ -432,7 +441,7 @@
             this.Controls.Add(this.brokerPortInput);
             this.Controls.Add(this.ipAdressLabel);
             this.Controls.Add(this.brokerIpAddrInput);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "StartConfigForm";
             this.Padding = new System.Windows.Forms.Padding(14, 60, 14, 13);
             this.Style = MetroFramework.MetroColorStyle.White;
@@ -481,6 +490,7 @@
         private MetroFramework.Controls.MetroButton saveConfig;
         private MetroFramework.Controls.MetroLabel gracePeriodLbl;
         private System.Windows.Forms.NumericUpDown gracePeriod;
+        private System.Windows.Forms.ToolTip genericToolTip;
     }
 }
 
