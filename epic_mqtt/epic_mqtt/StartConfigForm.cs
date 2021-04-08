@@ -75,11 +75,11 @@ namespace mqtt_stresstest
             }
 
             // Establishes a new MQTT client on the given host name and port
-            client = new MqttClient(brokerHost, brokerPort, false, null, null, MqttSslProtocols.None);
-            string clientId = "stress_test/ui";
-
             try
             {
+                // Moved the below two lines into the try-catch statement in order to fix invalid string input in IP address field
+                client = new MqttClient(brokerHost, brokerPort, false, null, null, MqttSslProtocols.None);
+                string clientId = "stress_test/ui";
                 client.Connect(clientId);
                 client.MqttMsgPublishReceived += onMessageReceived;
                 client.Subscribe(new string[]{ "stress_test/results" }, new byte[]{ MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
