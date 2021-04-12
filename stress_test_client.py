@@ -27,9 +27,6 @@ class StressTestClient:
         self.client.connect(broker_ip, broker_port, 60)
         self.client.subscribe(self.topic, self.qos_level)
         self.client.loop_start()
-        
-    def on_log(self, client, userdata, level, buf):
-        print("log: ",buf)
 
     def publish_message(self):
         time_in_milliseconds = time.time_ns() // 1_000_000

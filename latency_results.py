@@ -9,13 +9,13 @@ class LatencyResultsProcessor:
         
     def add_latency_info(self, packet_num, latency):
         if self.offset[packet_num] != None:
-            self.packet_data[packet_num] = latency - self.offset[packet_num]
+            self.packet_data[packet_num] = max(latency - self.offset[packet_num], 1)
         else:
             self.packet_data[packet_num] = latency
 
     def add_offset(self, packet_num, offset):
         if self.packet_data[packet_num] != None:
-            self.packet_data[packet_num] = self.packet_data[packet_num] - offset
+            self.packet_data[packet_num] = max(self.packet_data[packet_num] - offset, 1)
         else:
             self.offset[packet_num] = offset
     
