@@ -15,7 +15,7 @@ class LatencyResultsProcessor:
 
     def add_offset(self, packet_num, offset):
         if self.packet_data[packet_num] != None:
-            self.packet_data[packet_num] = packet_data[packet_num] - offset
+            self.packet_data[packet_num] = self.packet_data[packet_num] - offset
         else:
             self.offset[packet_num] = offset
     
