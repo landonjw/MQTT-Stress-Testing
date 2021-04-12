@@ -53,8 +53,6 @@ class StressTestClient:
         self.results.add_offset(self.current_packet, time_in_milliseconds_now - time_in_milliseconds)
         self.current_packet = self.current_packet + 1
 
-        print(f'Publish Delay {time_in_milliseconds_now - time_in_milliseconds}')
-
     def get_packet_size(self):
         if self.min_packet_size_bytes <= 0 or self.max_packet_size_bytes <= 0:
             return -1
