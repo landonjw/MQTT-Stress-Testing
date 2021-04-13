@@ -5,7 +5,8 @@ Tool for simulating clients on an MQTT network with the ability to collect laten
 ## Installation
 This installation guide assumes no previous knowledge and uses version 2.0.9 of the (Mosquitto)[https://mosquitto.org/download/] broker.  
 If you are using a different broker, version, or configuration, results may differ and require you to consult their documentation.  
-All configuration settings we use will be explained in their role. Some may not be necessary depending on your testing conditions.
+All configuration settings we use will be explained in their role. Some may not be necessary depending on your testing conditions.  
+This installation assumes you have basic knowledge of Git and how to clone a repository.
 
 ### Instructions
 1. Download and install the (Mosquitto)[https://mosquitto.org/download/] broker.
@@ -22,6 +23,11 @@ All configuration settings we use will be explained in their role. Some may not 
 7. Execute the command `mosquitto -c testing.conf`
     - `-c` argument specifies that the configuration used by Mosquitto is `testing.conf`
     - `-v` argument can also be added to tell Mosquitto to run in verbose mode. This will allow you to see incoming and outgoing messages from the broker.
-8. Modify the `broker_ip` and `broker_port` variables in `stress_test.py`
-9. Run `stress_test.py`.
-    - If connection to the broker is successful, you should see `Connected to broker...`
+8. Clone the repository into a desired file
+9. Open `stress_test.py` in your preferred text editor
+10. Modify the `broker_ip` and `broker_port` variables at the top of the file to reflect your broker's connection details.
+12. Close the file and run `stress_test.py`.
+    - If connection to the broker is successful, you should see `Connected to broker.`
+13. Open the `epic_mqtt` solution in Visual Studio
+14. Build the application and execute it
+    - Alternatively, click `Start` to run in debug mode
