@@ -5,25 +5,51 @@ import stress_test_client
 import task_manager
 import latency_results
 
-publishers = []
+publishers = [] # The simulated clients that are publishing data to the MQTT broker.
 
-broker_ip = "192.168.2.44"
-broker_port = 1883
-start_topic = 'stress_test/start'
-results_topic = 'stress_test/results'
+broker_host = "192.168.2.36" # IP of the broker to connect to.
+broker_port = 1883 # Port of the broker to connect to
+
+# Client responsible for initializing stress tests and returning results.
+# This value will be null until the script successfully connects to the broker.
 master_client = None
+
+start_topic = 'stress_test/start' # Topic for the master client used to start the test is to subscribe to
+results_topic = 'stress_test/results' # Topic to publish test results to
+
+# Number of seconds to wait after all messages have been published to collect and publish test results.
+# We do this so that we do not misinterpret lagging responses for lost packets.
+# This value is received from the UI to allow control via from end users.
 grace_period_seconds = 5
 
-def create_publisher(id, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes):
-    client = stress_test_client.StressTestClient(id, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes)
-    client.initialize_client(broker_ip, broker_port)
+debug = False # Determines of program should generate debug messages.
+
+def __create_publisher(id, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes):
+    """
+    Creates an MQTT client used for stress testing and connects it to the broker.
+
+    Arguments
+    ---------
+    id: Integer
+        ID of the stress test client. This should be unique.
+    packet_interval_ms: Integer
+        The interval in milliseconds before the packet should send a packet. Must be above or equal to 25 and divisible by 25.
+    duration_seconds: Integer
+        How long the client should generate messages for. Must be above 0.
+        It not necessarily accurate. Simply used in determining the number of packets the client should send over the network using packet_interval_ms.
+    qos_level: Integer
+        The quality of service level. Must be 0, 1, or 2.
+    packet_size_bytes: Integer
+        The size of the payload to generate per-message. Must be between 100 bytes to 256 megabytes.
+    """
+    client = stress_test_client.StressTestClient(id, broker_host, broker_port, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes)
     publishers.append(client)
 
 def create_master_client():
     global master_client
     master_client = mqtt.Client(client_id = 'Stress Test Master')
     master_client.on_message = on_master_receive_message
-    master_client.connect(broker_ip, broker_port, 6000)
+    master_client.connect(broker_host, broker_port, 6000)
     master_client.subscribe(start_topic, 1)
     master_client.loop_start()
     print('Connecting...')
@@ -36,7 +62,7 @@ def on_master_receive_message(client, userdata, msg):
     grace_period_seconds = packet["grace_period_seconds"]
     for i in range(0, len(packet["clients"])):
         client = packet["clients"][i]
-        create_publisher(i, client["packet_interval_ms"], client["duration_seconds"], client["qos_level"], client["packet_size_bytes"])
+        __create_publisher(i, client["packet_interval_ms"], client["duration_seconds"], client["qos_level"], client["packet_size_bytes"])
     start_publishing()
 
 def start_publishing():
@@ -67,7 +93,6 @@ def gather_results():
             "latency_max": publisher_results[i].get_max_latency(),
             "packets_lost": publisher_results[i].get_packets_lost()
         })
-    print('Sending results')
     print(json.dumps(results, indent = 4))
     master_client.publish(results_topic, json.dumps(results))
     for publisher in publishers:
