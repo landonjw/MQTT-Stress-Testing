@@ -4,6 +4,7 @@ import shadow.paho.mqtt.client as mqtt
 import stress_test_client
 import task_manager
 import latency_results
+import byte_array_pool
 from debug_logger import debug
 
 publishers = [] # The simulated clients that are publishing data to the MQTT broker.
@@ -22,8 +23,6 @@ results_topic = 'stress_test/results' # Topic to publish test results to
 # We do this so that we do not misinterpret lagging responses for lost packets.
 # This value is received from the UI to allow control via from end users.
 grace_period_seconds = 5
-
-debug = False # Determines of program should generate debug messages.
 
 def __create_publisher(id, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes):
     """
@@ -52,7 +51,7 @@ def __create_master_client():
     """
     global master_client
     master_client = mqtt.Client(client_id = 'Stress Test Master')
-    master_client.on_message = on_master_receive_message
+    master_client.on_message = __on_master_receive_message
     print('Connecting to broker...')
     master_client.connect(broker_host, broker_port, 6000)
     master_client.subscribe(start_topic, 1)
@@ -90,7 +89,7 @@ def __start_publishing():
         packet_interval_ticks = task_manager.convertMsToTicks(publisher.packet_interval_ms)
         task = task_manager.Task(publisher.publish_message, packet_interval_ticks, publisher.total_packets_to_send)
         task_manager.add_task(task)
-    task_manager.start(gather_results)
+    task_manager.start(__gather_results)
 
 def __gather_results():
     """
@@ -100,7 +99,9 @@ def __gather_results():
     #       Example of this would be UI displaying live results while the test is ongoing.
 
     # Sleep for duration of grace period to prevent misinterpreting lagging packets for packet loss
+    debug(f'Sleeping for grace period ({grace_period_seconds}s)')
     time.sleep(grace_period_seconds)
+    debug(f'Waking up')
     publisher_results = []
     for publisher in publishers:
         publisher_results.append(publisher.results)
@@ -124,11 +125,15 @@ def __gather_results():
         })
     debug(json.dumps(results, indent = 4))
     master_client.publish(results_topic, json.dumps(results))
+    debug(f'Results sent to broker')
     # Disconnect all publishers after the results are gathered.
+    debug(f'Disconnecting stress test clients...')
     for publisher in publishers:
         publisher.client.disconnect()
+    publishers.clear()
+    byte_array_pool.reset_pool()
 
 # Entry point into the program.
-create_master_client()
+__create_master_client()
 while True:
-    time.sleep(0.0001)
+    time.sleep(3600)

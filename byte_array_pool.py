@@ -1,4 +1,5 @@
-pool = []
+# Stores instances of bytearrays to share between stress test clients
+__pool = []
 
 def get_or_create_byte_array(size_bytes):
     """
@@ -29,3 +30,10 @@ def get_or_create_byte_array(size_bytes):
     new_byte_arr = bytearray(size_bytes + 100)
     pool.append(new_byte_arr)
     return new_byte_arr
+
+def reset_pool():
+    """
+    Resets the byte array pool.
+    This should not be used while a stress test is ongoing.
+    """
+    __pool.clear()

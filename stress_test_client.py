@@ -6,7 +6,7 @@ import time
 import sys
 import random
 import byte_array_pool
-
+from debug_logger import debug
 class StressTestClient:
     """
     Represents an MQTT client with the purpose of stress testing the MQTT network.
@@ -132,8 +132,10 @@ class StressTestClient:
             
         # Publishes the message and stops the thread until it's finished publishing.
         # We stop the thread to prevent mutations of the shared payload array during publish.
+        debug(f'[Client {self.id}] Publishing packet {self.current_packet}...')
         publish = self.client.publish(self.topic, self.__packet_payload)
         publish.wait_for_publish()
+        debug(f'[Client {self.id}] Published packet {self.current_packet}!')
 
         # Clear the message data from the shared payload array to prepare for next publish.
         for i in range(0, 100 + len(payload_byte_arr)):
@@ -170,7 +172,6 @@ class StressTestClient:
             else:
                 if hit_message == True :
                     break
-        # print(f'Sanitized: {sanitized_payload_byte_arr}')
         return sanitized_payload_byte_arr
 
     def __on_receive_message(self, client, userdata, msg):

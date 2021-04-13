@@ -26,7 +26,7 @@ class Task:
         self.__ticks_remaining = 0
         self.expired = False
 
-    def __tick(self):
+    def tick(self):
         """
         Executes task if it should on the given tick.
         If the task is executed and fulfills it's interval requirement, it will expire and no longer run.
@@ -113,8 +113,8 @@ def start(callback):
     running = True
     while len(tasks) != 0:
         for task in tasks:
-            task.__tick()
-            if task.__expired:
+            task.tick()
+            if task.expired:
                 tasks.remove(task)
         time.sleep(tick_delay_ms / 1_000)
     running = False
