@@ -31,3 +31,4 @@ This installation assumes you have basic knowledge of Git and how to clone a rep
 13. Open the `epic_mqtt` solution in Visual Studio
 14. Build the application and execute it
     - Alternatively, click `Start` to run in debug mode
+15. You should now have a UI, broker, and python application running, and be ready to use the application.
