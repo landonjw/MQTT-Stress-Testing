@@ -51,7 +51,7 @@ class StressTestClient:
         # Due to this shared aspect, we must be careful of unexpected mutations, particularly when publishing.
         # This is used to optimize space consumption when end users want to use 256MB packets.
         # (Why you would want to send 256MB payloads through an IoT device is beyond me)
-        self.__packet_payload = byte_array_pool.get_or_create_byte_array(self)
+        self.__packet_payload = byte_array_pool.get_or_create_byte_array(self.packet_size_bytes)
         # Keeps track of how many packets the client has already published.
         self.current_packet = 0
         # Stores and manipulates the resulting latency of packets for the client.
