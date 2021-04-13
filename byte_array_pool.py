@@ -24,11 +24,11 @@ def get_or_create_byte_array(size_bytes):
     """
     if size_bytes <= 0:
         raise ValueError("byte size must be above 0")
-    for byte_arr in pool:
+    for byte_arr in __pool:
         if len(byte_arr) == size_bytes + 100:
             return byte_arr
     new_byte_arr = bytearray(size_bytes + 100)
-    pool.append(new_byte_arr)
+    __pool.append(new_byte_arr)
     return new_byte_arr
 
 def reset_pool():
