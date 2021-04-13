@@ -1,6 +1,6 @@
 import latency_results
 import math
-import shadow.paho.mqtt.client as mqtt
+import shadow.paho.mqtt.modified_client as mqtt
 import json
 import time
 import sys

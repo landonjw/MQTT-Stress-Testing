@@ -1,6 +1,6 @@
 import time
 import json
-import shadow.paho.mqtt.modified_client as mqtt
+import shadow.paho.mqtt.client as mqtt
 import stress_test_client
 import task_manager
 import latency_results
