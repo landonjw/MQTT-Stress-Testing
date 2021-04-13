@@ -4,6 +4,7 @@ import shadow.paho.mqtt.modified_client as mqtt
 import stress_test_client
 import task_manager
 import latency_results
+from debug_logger import debug
 
 publishers = [] # The simulated clients that are publishing data to the MQTT broker.
 
@@ -126,18 +127,6 @@ def __gather_results():
     # Disconnect all publishers after the results are gathered.
     for publisher in publishers:
         publisher.client.disconnect()
-
-def debug(message):
-    """
-    Prints a message to console if debug mode is on.
-
-    Arguments
-    ---------
-    message: String
-        The message to send to console
-    """
-    if debug == True:
-        print(message)
 
 # Entry point into the program.
 create_master_client()
