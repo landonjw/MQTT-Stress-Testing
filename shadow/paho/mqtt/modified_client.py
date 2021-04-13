@@ -2506,7 +2506,6 @@ class Client(object):
             return MQTT_ERR_NO_CONN
 
         command = PUBLISH | ((dup & 0x1) << 3) | (qos << 1) | retain
-        # print(command)
         packet = bytearray()
         packet.append(command)
 
@@ -2540,22 +2539,10 @@ class Client(object):
 
         if self._protocol == MQTTv5:
             packet.extend(packed_properties)
-
-        # print(f'Payload: {len(payload)}')
         for i in range(0, len(packet)):
             payload[i] = packet[i]
 
-        # time_in_milliseconds_publish = time.time_ns() // 1_000_000
-        # print(f'Queue Time: {time_in_milliseconds_publish - time_in_milliseconds}')
-
-        # packet.extend(payload)
-
-        # print(payload[0:200])
-
-        # time_in_milliseconds = time.time_ns() // 1_000_000
         queue = self._packet_queue(PUBLISH, payload, mid, qos, info)
-        # time_in_milliseconds_queue = time.time_ns() // 1_000_000
-        # print(f'Queue Time: {time_in_milliseconds_queue - time_in_milliseconds}')
 
         return queue
 

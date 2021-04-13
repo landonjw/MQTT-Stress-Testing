@@ -2504,7 +2504,6 @@ class Client(object):
             return MQTT_ERR_NO_CONN
 
         command = PUBLISH | ((dup & 0x1) << 3) | (qos << 1) | retain
-        print(command)
         packet = bytearray()
         packet.append(command)
 
