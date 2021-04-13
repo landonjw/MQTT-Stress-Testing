@@ -3,13 +3,13 @@
 Tool for simulating clients on an MQTT network with the ability to collect latency results.
 
 ## Installation
-This installation guide assumes no previous knowledge and uses version 2.0.9 of the (Mosquitto)[https://mosquitto.org/download/] broker.  
+This installation guide assumes no previous knowledge and uses version 2.0.9 of the [Mosquitto](https://mosquitto.org/download/) broker.  
 If you are using a different broker, version, or configuration, results may differ and require you to consult their documentation.  
 All configuration settings we use will be explained in their role. Some may not be necessary depending on your testing conditions.  
 This installation assumes you have basic knowledge of Git and how to clone a repository.
 
 ### Instructions
-1. Download and install the (Mosquitto)[https://mosquitto.org/download/] broker.
+1. Download and install the [Mosquitto](https://mosquitto.org/download/) broker.
 2. In the root folder for Mosquitto, copy the `mosquitto.conf` file into a new file called `testing.conf`.
 3. Open `testing.conf` in your preferred text editor.
 4. Go to line 215, remove the text on the line, and add the text `listener [port] [hostname]`
