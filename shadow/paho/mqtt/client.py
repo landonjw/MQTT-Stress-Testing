@@ -1251,7 +1251,6 @@ class Client(object):
         if qos < 0 or qos > 2:
             raise ValueError('Invalid QoS level.')
 
-        time_in_milliseconds = time.time_ns() // 1_000_000
         if isinstance(payload, unicode):
             local_payload = payload.encode('utf-8')
         elif isinstance(payload, (bytes, bytearray)):
@@ -2332,8 +2331,8 @@ class Client(object):
             packet = self._current_out_packet
 
             try:
-                data = packet['packet'][packet['pos']:]
-                write_length = self._sock_send(data)
+                write_length = self._sock_send(
+                    packet['packet'][packet['pos']:])
             except (AttributeError, ValueError):
                 self._current_out_packet_mutex.release()
                 return MQTT_ERR_SUCCESS
@@ -2498,7 +2497,6 @@ class Client(object):
 
     def _send_publish(self, mid, topic, payload=b'', qos=0, retain=False, dup=False, info=None, properties=None):
         # we assume that topic and payload are already properly encoded
-        # time_in_milliseconds = time.time_ns() // 1_000_000
         assert not isinstance(topic, unicode) and not isinstance(
             payload, unicode) and payload is not None
 
@@ -2506,23 +2504,43 @@ class Client(object):
             return MQTT_ERR_NO_CONN
 
         command = PUBLISH | ((dup & 0x1) << 3) | (qos << 1) | retain
-        # print(command)
+        print(command)
         packet = bytearray()
         packet.append(command)
 
-        remaining_length = len(payload)
-        storage_bytes = 4
-        if(len(payload) < 127):
-            storage_bytes = 1
-        elif(len(payload) < 16_383):
-            storage_bytes = 2
-        elif(len(payload) < 2_097_056):
-            storage_bytes = 3
-        remaining_length = remaining_length - storage_bytes - 1
+        payloadlen = len(payload)
+        remaining_length = 2 + len(topic) + payloadlen
 
-        # if qos > 0:
-        #     # For message id
-        #     remaining_length += 2
+        if payloadlen == 0:
+            if self._protocol == MQTTv5:
+                self._easy_log(
+                    MQTT_LOG_DEBUG,
+                    "Sending PUBLISH (d%d, q%d, r%d, m%d), '%s', properties=%s (NULL payload)",
+                    dup, qos, retain, mid, topic, properties
+                )
+            else:
+                self._easy_log(
+                    MQTT_LOG_DEBUG,
+                    "Sending PUBLISH (d%d, q%d, r%d, m%d), '%s' (NULL payload)",
+                    dup, qos, retain, mid, topic
+                )
+        else:
+            if self._protocol == MQTTv5:
+                self._easy_log(
+                    MQTT_LOG_DEBUG,
+                    "Sending PUBLISH (d%d, q%d, r%d, m%d), '%s', properties=%s, ... (%d bytes)",
+                    dup, qos, retain, mid, topic, properties, payloadlen
+                )
+            else:
+                self._easy_log(
+                    MQTT_LOG_DEBUG,
+                    "Sending PUBLISH (d%d, q%d, r%d, m%d), '%s', ... (%d bytes)",
+                    dup, qos, retain, mid, topic, payloadlen
+                )
+
+        if qos > 0:
+            # For message id
+            remaining_length += 2
 
         if self._protocol == MQTTv5:
             if properties == None:
@@ -2541,23 +2559,9 @@ class Client(object):
         if self._protocol == MQTTv5:
             packet.extend(packed_properties)
 
-        # print(f'Payload: {len(payload)}')
-        for i in range(0, len(packet)):
-            payload[i] = packet[i]
+        packet.extend(payload)
 
-        # time_in_milliseconds_publish = time.time_ns() // 1_000_000
-        # print(f'Queue Time: {time_in_milliseconds_publish - time_in_milliseconds}')
-
-        # packet.extend(payload)
-
-        # print(payload[0:200])
-
-        # time_in_milliseconds = time.time_ns() // 1_000_000
-        queue = self._packet_queue(PUBLISH, payload, mid, qos, info)
-        # time_in_milliseconds_queue = time.time_ns() // 1_000_000
-        # print(f'Queue Time: {time_in_milliseconds_queue - time_in_milliseconds}')
-
-        return queue
+        return self._packet_queue(PUBLISH, packet, mid, qos, info)
 
     def _send_pubrec(self, mid):
         self._easy_log(MQTT_LOG_DEBUG, "Sending PUBREC (Mid: %d)", mid)
