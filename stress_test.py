@@ -45,38 +45,65 @@ def __create_publisher(id, packet_interval_ms, duration_seconds, qos_level, pack
     client = stress_test_client.StressTestClient(id, broker_host, broker_port, packet_interval_ms, duration_seconds, qos_level, packet_size_bytes)
     publishers.append(client)
 
-def create_master_client():
+def __create_master_client():
+    """
+    Initializes the client responsible for starting stress tests and publishing results to the broker.
+    """
     global master_client
     master_client = mqtt.Client(client_id = 'Stress Test Master')
     master_client.on_message = on_master_receive_message
+    print('Connecting to broker...')
     master_client.connect(broker_host, broker_port, 6000)
     master_client.subscribe(start_topic, 1)
     master_client.loop_start()
-    print('Connecting...')
+    print('Connected to broker.')
 
-def on_master_receive_message(client, userdata, msg):
-    print(msg.payload)
+def __on_master_receive_message(client, userdata, msg):
+    """
+    Invoked when the master receives a message.
+    This will assume that the message received contains data related to configuring a stress test.
+
+    Arguments
+    ---------
+    client: Not used
+    userdata: Not used
+    msg: MQTTMessage
+        The message received. Contains the payload used to interpret stress test start.
+    """
+    debug(msg.payload)
     packet = json.loads(msg.payload)
-    print(json.dumps(packet, indent=4))
+    debug(json.dumps(packet, indent = 4))
     global grace_period_seconds
     grace_period_seconds = packet["grace_period_seconds"]
     for i in range(0, len(packet["clients"])):
         client = packet["clients"][i]
         __create_publisher(i, client["packet_interval_ms"], client["duration_seconds"], client["qos_level"], client["packet_size_bytes"])
-    start_publishing()
+    __start_publishing()
 
-def start_publishing():
+def __start_publishing():
+    """
+    Starts the publishing process of stress test clients.
+    """
     for publisher in publishers:
+        # Creates a task for each client to start publishing.
         packet_interval_ticks = task_manager.convertMsToTicks(publisher.packet_interval_ms)
         task = task_manager.Task(publisher.publish_message, packet_interval_ticks, publisher.total_packets_to_send)
         task_manager.add_task(task)
     task_manager.start(gather_results)
 
-def gather_results():
+def __gather_results():
+    """
+    Gathers the results from each client, processes the total results and publishes it to the broker.
+    """
+    # TODO: This might want to be moved to the UI in order to allow more dynamic result processing.
+    #       Example of this would be UI displaying live results while the test is ongoing.
+
+    # Sleep for duration of grace period to prevent misinterpreting lagging packets for packet loss
     time.sleep(grace_period_seconds)
     publisher_results = []
     for publisher in publishers:
         publisher_results.append(publisher.results)
+    # Add total results to the results json
     results = {
         "total": {
             "latency_average": latency_results.get_total_average_latency(publisher_results),
@@ -86,6 +113,7 @@ def gather_results():
         },
         "clients": []
     }
+    # Add results for each client to the results client.
     for i in range(0, len(publisher_results)):
         results["clients"].append({
             "latency_average": publisher_results[i].get_average_latency(),
@@ -93,11 +121,25 @@ def gather_results():
             "latency_max": publisher_results[i].get_max_latency(),
             "packets_lost": publisher_results[i].get_packets_lost()
         })
-    print(json.dumps(results, indent = 4))
+    debug(json.dumps(results, indent = 4))
     master_client.publish(results_topic, json.dumps(results))
+    # Disconnect all publishers after the results are gathered.
     for publisher in publishers:
         publisher.client.disconnect()
 
+def debug(message):
+    """
+    Prints a message to console if debug mode is on.
+
+    Arguments
+    ---------
+    message: String
+        The message to send to console
+    """
+    if debug == True:
+        print(message)
+
+# Entry point into the program.
 create_master_client()
 while True:
     time.sleep(0.0001)
