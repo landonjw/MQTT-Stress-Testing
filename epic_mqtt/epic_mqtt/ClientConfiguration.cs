@@ -20,6 +20,10 @@ namespace epic_mqtt
                 {
                     _packetIntervalMS = value;
                 }
+                else
+                {
+                    throw new ArgumentException("packet interval must be divisible by 25");
+                }
             }
         }
 
@@ -33,6 +37,10 @@ namespace epic_mqtt
                 if (value >= 100)
                 {
                     _packetSizeBytes = value;
+                }
+                else
+                {
+                    throw new ArgumentException("packet size must be atleast 100 bytes");
                 }
             }
         }
@@ -48,6 +56,10 @@ namespace epic_mqtt
                 {
                     _durationSeconds = value;
                 }
+                else
+                {
+                    throw new ArgumentException("duration must be above 0");
+                }
             }
         }
 
@@ -62,6 +74,10 @@ namespace epic_mqtt
                 if (value == 0 || value == 1 || value == 2)
                 {
                     _qosLevel = value;
+                }
+                else
+                {
+                    throw new ArgumentException("qos level must be between 0 and 2");
                 }
             }
         }
